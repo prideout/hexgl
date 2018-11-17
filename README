@@ -1,0 +1,19 @@
+This is an emulation of Thibaut Despoulain's wonderful HexGL game, rewritten from scratch using
+TypeScript and Filament.  I tilt my hat to Thibaut for his generous contribution to the community.
+🎩🏎
+
+<!--
+This is a literate racing game, written in markdown. The code blocks get extracted and glued into
+a single TypeScript file. It is basically a clone of Thibaut Despoulain's wonderful HexGL using
+Filament and WebGL 2.0. I tilt my hat to Thibaut for his generous contribution to the community.
+-->
+
+To build the web app, clone the repo twice: once for master and once for gh-pages.
+
+    git clone https://github.com/prideout/lightrace.git lightrace
+    git clone -b gh-pages https://github.com/prideout/lightrace.git lightrace_pages
+    cd lightrace
+    yarn install
+    yarn build
+    cd ../lightrace_pages
+    npx http-server
