@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "typed-web-workers": "^2.1.1"
+  },
+  "devDependencies": {
+    "typescript": "^3.1.6"
+  }
+}
