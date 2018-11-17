@@ -1,4 +1,8 @@
+import render = require('./render');
+
 import { createWorker, ITypedWorker } from 'typed-web-workers'
+
+render();
 
 interface Values {
     x: number

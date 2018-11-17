@@ -1,13 +1,5 @@
 {
     "compilerOptions": {
-      "strict": true,
-      "declaration": true,
-      "outDir": "lib",
-      "module": "commonjs",
-      "skipLibCheck": true,
-      "target": "es3"
-    },
-    "include": [
-      "src"
-    ]
+        "sourceMap": true
+    }
 }
