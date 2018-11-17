@@ -1,8 +1,13 @@
+const path = require('path');
+
 'use strict';
 
 module.exports = {
     devtool: 'inline-source-map',
     entry: './src/index.ts',
+    output:  {
+        path: path.resolve(__dirname, '../lightrace_pages')
+    },
     module: {
         rules: [
             {
