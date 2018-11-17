@@ -1,53 +1,6 @@
-import render = require('./render');
+import './filament';
 
 import { createWorker, ITypedWorker } from 'typed-web-workers'
-
-declare namespace Filament {
-    function getSupportedFormatSuffix(string): void;
-    function init(assets: Array<string>, onready: Function): void;
-    function fetch(assets: Array<string>, onready: Function): void;
-
-    class Skybox {}
-    class SwapChain {}
-    class Renderer {}
-
-    enum Camera$Fov { VERTICAL, HORIZONTAL, }
-
-    class Camera {
-        lookAt(eye: Array<number>, center: Array<number>, up: Array<number>): void;
-        setProjectionFov(fovInDegrees: number, aspect: number,
-                near: number, far: number, fov: Camera$Fov): void;
-    }
-
-    class IndirectLight {
-        setIntensity(intensity: number);
-    }
-
-    class Scene {
-        setSkybox(sky: Skybox);
-        setIndirectLight(ibl: IndirectLight);
-    }
-
-    class View {
-        setCamera(camera: Camera);
-        setScene(scene: Scene);
-        setViewport(viewport: Array<number>);
-    }
-
-    class Engine {
-        static create(HTMLCanvasElement): Engine;
-        getSupportedFormatSuffix(string): void;
-        init(assets: Array<string>, onready: Function): void;
-        createScene(): Scene;
-        createSkyFromKtx(url: string): Skybox;
-        createIblFromKtx(url: string): IndirectLight;
-        createSwapChain(): SwapChain;
-        createRenderer(): Renderer;
-        createCamera(): Camera;
-        createView(): View;
-        destroySkybox(skybox: Skybox): void;
-    }
-}
 
 const ibl_suffix = Filament.getSupportedFormatSuffix('etc s3tc');
 const environ = 'syferfontein_18d_clear_2k'
@@ -115,15 +68,9 @@ class App {
     }
 }
 
-declare namespace window {
-    let app: App;
-}
-
 Filament.init([sky_small_url, ibl_url], () => {
-    window.app = new App(document.getElementsByTagName('canvas')[0]);
+    window['app'] = new App(document.getElementsByTagName('canvas')[0]);
 });
-
-render();
 
 interface Values {
     x: number
