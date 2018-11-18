@@ -1,9 +1,13 @@
 import './filament';
 
+import { Track } from './track';
+import { Scrapers1 } from './scrapers1';
+import { Scrapers2 } from './scrapers2';
+
 import { createWorker, ITypedWorker } from 'typed-web-workers'
 
 const ibl_suffix = Filament.getSupportedFormatSuffix('etc s3tc');
-const environ = 'syferfontein_18d_clear_2k'
+const environ = 'env/syferfontein_18d_clear_2k'
 const ibl_url = `${environ}_ibl${ibl_suffix}.ktx.bmp`;
 const sky_small_url = `${environ}_skybox_tiny.ktx.bmp`;
 const sky_large_url = `${environ}_skybox.ktx.bmp`;
@@ -34,6 +38,8 @@ class App {
         this.view = this.engine.createView();
         this.view.setCamera(this.camera);
         this.view.setScene(this.scene);
+
+        console.info('philip', Track.vertices);
 
         Filament.fetch([sky_large_url], () => {
             this.engine.destroySkybox(this.skybox);

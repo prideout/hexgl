@@ -1,5 +1,15 @@
+Draw tracks and scrapers
+Draw ship
+Implement ChaseCamera
+Implement keyboard controls
+Replace ship with hoverbike
+    http://xeogl.org/examples/#materials_specular_Hoverbike
+Faster, more progressive loading
+    Replace geometry with binary files
+    Replace PNG with KTX
+Implement other game features
 
-http://xeogl.org/examples/#materials_specular_Hoverbike
+---
 
 var camera = new THREE.PerspectiveCamera( 70, ctx.width / ctx.height, 1, 60000 );
 
