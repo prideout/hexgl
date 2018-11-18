@@ -20,14 +20,13 @@ const tracksSpecularUrl = "tracks/specular.png";
 const tracksNormalUrl = "tracks/normal.png";
 
 class App {
-    public canvas: HTMLCanvasElement;
-    public engine: Filament.Engine;
-    public scene: Filament.Scene;
-    public skybox: Filament.Skybox;
-    public indirectLight: Filament.IndirectLight;
-    public camera: Filament.Camera;
-    public view: Filament.View;
-
+    private canvas: HTMLCanvasElement;
+    private engine: Filament.Engine;
+    private scene: Filament.Scene;
+    private skybox: Filament.Skybox;
+    private indirectLight: Filament.IndirectLight;
+    private camera: Filament.Camera;
+    private view: Filament.View;
     private swapChain: Filament.SwapChain;
     private renderer: Filament.Renderer;
 
@@ -38,7 +37,7 @@ class App {
         this.skybox = this.engine.createSkyFromKtx(skySmallUrl);
         this.scene.setSkybox(this.skybox);
         this.indirectLight = this.engine.createIblFromKtx(iblUrl);
-        this.indirectLight.setIntensity(100000);
+        this.indirectLight.setIntensity(1000000); // extra zero :)
         this.scene.setIndirectLight(this.indirectLight);
         this.swapChain = this.engine.createSwapChain();
         this.renderer = this.engine.createRenderer();
@@ -57,9 +56,11 @@ class App {
             this.onload();
         });
 
-        const eye = [0, 0, 4];
-        const center = [0, 0, 0];
-        const up = [0, 1, 0];
+        const shippos = [-1134 * 2, 15, -443 * 2];
+
+        const eye =    [ 0, -1000,  0];
+        const center = [ 0,  0,  0];
+        const up =     [ 0,  0,  1];
         this.camera.lookAt(eye, center, up);
 
         this.render = this.render.bind(this);
@@ -85,25 +86,40 @@ class App {
         matinstance.setTextureParameter("specular", specular, sampler);
         matinstance.setTextureParameter("normal", normal, sampler);
 
-        const triangles0 = processMesh(Track.faces, Track.vertices, Track.uvs, Track.normals);
-        const triangles1 = processMesh(Scrapers1.faces, Scrapers1.vertices, Scrapers1.uvs,
-                Scrapers1.normals);
-        const triangles2 = processMesh(Scrapers2.faces, Scrapers2.vertices, Scrapers2.uvs,
-                Scrapers2.normals);
-        const triangles3 = processMesh(Ship.faces, Ship.vertices, Ship.uvs, Ship.normals);
+        const [triangles0, uvs0] = processMesh(Track.faces, Track.vertices, Track.uvs, Track.normals);
+        console.info(`TRACK
+            nverts=${Track.vertices.length / 3}
+            nuvs=${Track.uvs[0].length / 2}
+            ntris=${triangles0.length / 3}
+            maxind=${Math.max.apply(null, triangles0)}`);
 
-        console.info(Track.vertices.length / 3, triangles0.length / 3,
-                Math.max.apply(null, triangles0));
-        console.info(Scrapers1.vertices.length / 3, triangles1.length / 3,
-                Math.max.apply(null, triangles1));
-        console.info(Scrapers2.vertices.length / 3, triangles2.length / 3,
-                Math.max.apply(null, triangles2));
-        console.info(Ship.vertices.length / 3, triangles3.length / 3,
-                Math.max.apply(null, triangles3));
+        const [triangles1, uvs1] = processMesh(Scrapers1.faces, Scrapers1.vertices, Scrapers1.uvs,
+            Scrapers1.normals);
+        console.info(`SCRAPERS1
+            nverts=${Scrapers1.vertices.length / 3}
+            nuvs=${Scrapers1.uvs[0].length / 2}
+            ntris=${triangles1.length / 3}
+            maxind=${Math.max.apply(null, triangles1)}`);
+
+        const [triangles2, uvs2] = processMesh(Scrapers2.faces, Scrapers2.vertices, Scrapers2.uvs,
+            Scrapers2.normals);
+        console.info(`SCRAPERS2
+            nverts=${Scrapers2.vertices.length / 3}
+            nuvs=${Scrapers2.uvs[0].length / 2}
+            ntris=${triangles2.length / 3}
+            maxind=${Math.max.apply(null, triangles2)}`);
+
+        const [triangles3, uvs3] = processMesh(Ship.faces, Ship.vertices, Ship.uvs, Ship.normals);
+        console.info(`SHIP
+            nverts=${Ship.vertices.length / 3}
+            nuvs=${Ship.uvs[0].length / 2}
+            ntris=${triangles3.length / 3}
+            maxind=${Math.max.apply(null, triangles3)}`);
 
         const nverts = Track.vertices.length / 3;
         const vertices = new Float32Array(Track.vertices);
         const tangents = new Uint16Array(4 * nverts);
+        const texcoords = new Float32Array(uvs0);
 
         for (let i = 0; i < nverts; ++i) {
             const src = vertices.subarray(i * 3, i * 3 + 3) as vec3;
@@ -124,19 +140,22 @@ class App {
 
         const vb = Filament.VertexBuffer.Builder()
             .vertexCount(nverts)
-            .bufferCount(2)
+            .bufferCount(3)
             .attribute(VertexAttribute.POSITION, 0, AttributeType.FLOAT3, 0, 0)
             .attribute(VertexAttribute.TANGENTS, 1, AttributeType.SHORT4, 0, 0)
+            .attribute(VertexAttribute.UV0, 2, AttributeType.FLOAT2, 0, 0)
             .normalized(VertexAttribute.TANGENTS)
             .build(this.engine);
+
+        vb.setBufferAt(this.engine, 0, vertices);
+        vb.setBufferAt(this.engine, 1, tangents);
+        vb.setBufferAt(this.engine, 2, texcoords);
 
         const ib = Filament.IndexBuffer.Builder()
             .indexCount(triangles0.length)
             .bufferType(IndexType.USHORT)
             .build(this.engine);
 
-        vb.setBufferAt(this.engine, 0, vertices);
-        vb.setBufferAt(this.engine, 1, tangents);
         ib.setBuffer(this.engine, new Uint16Array(triangles0));
 
         const renderable = Filament.EntityManager.get().create();
@@ -167,7 +186,7 @@ class App {
         const aspect = width / height;
         const Fov = Filament.Camera$Fov;
         const fov = aspect < 1 ? Fov.HORIZONTAL : Fov.VERTICAL;
-        this.camera.setProjectionFov(45, aspect, 1.0, 10.0, fov);
+        this.camera.setProjectionFov(45, aspect, 1.0, 2000.0, fov);
     }
 }
 

@@ -1,13 +1,16 @@
-Draw scrapers
-Fix UV's on tracks
+Deref index buffer
 Draw ship
+Draw scrapers
 Implement ChaseCamera
+Fix UV's on tracks ... without dereferencing the index buffer somehow?
 Implement keyboard controls
 Replace ship with hoverbike
     http://xeogl.org/examples/#materials_specular_Hoverbike
 Faster, more progressive loading
+    Indexed geometry (implies reworking the texture atlases)
     Replace geometry with binary files
     Replace PNG with KTX
+    Use worker thread
 Implement other game features
 contribute to DefinitelyTyped
 
