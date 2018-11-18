@@ -1,6 +1,8 @@
 import "./filament";
 
+import { mat3, quat, vec3, vec4 } from "gl-matrix";
 import { createWorker, ITypedWorker } from "typed-web-workers";
+import { vec4_packSnorm16 } from "./math";
 import { processMesh } from "./meshloader";
 import { Scrapers1 } from "./scrapers1";
 import { Scrapers2 } from "./scrapers2";
@@ -23,10 +25,11 @@ class App {
     public scene: Filament.Scene;
     public skybox: Filament.Skybox;
     public indirectLight: Filament.IndirectLight;
-    public swapChain: Filament.SwapChain;
-    public renderer: Filament.Renderer;
     public camera: Filament.Camera;
     public view: Filament.View;
+
+    private swapChain: Filament.SwapChain;
+    private renderer: Filament.Renderer;
 
     constructor(canvas) {
         this.canvas = canvas;
@@ -67,7 +70,6 @@ class App {
     }
 
     private onload() {
-
         const sampler = new Filament.TextureSampler(
             Filament.MinFilter.LINEAR_MIPMAP_LINEAR,
             Filament.MagFilter.LINEAR,
@@ -99,18 +101,21 @@ class App {
         console.info(Ship.vertices.length / 3, triangles3.length / 3,
                 Math.max.apply(null, triangles3));
 
-        // this.tangents = new Uint16Array(4 * nverts);
-        // for (var i = 0; i < nverts; ++i) {
-        //     const src = this.vertices.subarray(i * 3, i * 3 + 3);
-        //     const dst = this.tangents.subarray(i * 4, i * 4 + 4);
-        //     const n = vec3.normalize(vec3.create(), src);
-        //     const b = vec3.cross(vec3.create(), n, [0, 1, 0]);
-        //     vec3.normalize(b, b);
-        //     const t = vec3.cross(vec3.create(), b, n);
-        //     const q = quat.fromMat3(quat.create(), [
-        //             t[0], t[1], t[2], b[0], b[1], b[2], n[0], n[1], n[2]]);
-        //     vec4.packSnorm16(dst, q);
-        // }
+        const nverts = Track.vertices.length / 3;
+        const vertices = new Float32Array(Track.vertices);
+        const tangents = new Uint16Array(4 * nverts);
+
+        for (let i = 0; i < nverts; ++i) {
+            const src = vertices.subarray(i * 3, i * 3 + 3) as vec3;
+            const dst = tangents.subarray(i * 4, i * 4 + 4) as vec4;
+            const n = vec3.normalize(vec3.create(), src);
+            const b = vec3.cross(vec3.create(), n, [0, 1, 0]);
+            vec3.normalize(b, b);
+            const t = vec3.cross(vec3.create(), b, n);
+            const m3 = mat3.fromValues(t[0], t[1], t[2], b[0], b[1], b[2], n[0], n[1], n[2]);
+            const q = quat.fromMat3(quat.create(), m3);
+            vec4_packSnorm16(dst, q);
+        }
 
         const VertexAttribute = Filament.VertexAttribute;
         const AttributeType = Filament.VertexBuffer$AttributeType;
@@ -118,11 +123,11 @@ class App {
         const PrimitiveType = Filament.RenderableManager$PrimitiveType;
 
         const vb = Filament.VertexBuffer.Builder()
-            .vertexCount(Track.vertices.length / 3)
+            .vertexCount(nverts)
             .bufferCount(2)
             .attribute(VertexAttribute.POSITION, 0, AttributeType.FLOAT3, 0, 0)
-            // .attribute(VertexAttribute.TANGENTS, 1, AttributeType.SHORT4, 0, 0)
-            // .normalized(VertexAttribute.TANGENTS)
+            .attribute(VertexAttribute.TANGENTS, 1, AttributeType.SHORT4, 0, 0)
+            .normalized(VertexAttribute.TANGENTS)
             .build(this.engine);
 
         const ib = Filament.IndexBuffer.Builder()
@@ -130,8 +135,8 @@ class App {
             .bufferType(IndexType.USHORT)
             .build(this.engine);
 
-        vb.setBufferAt(this.engine, 0, new Float32Array(Track.vertices));
-        // vb.setBufferAt(this.engine, 1, icosphere.tangents);
+        vb.setBufferAt(this.engine, 0, vertices);
+        vb.setBufferAt(this.engine, 1, tangents);
         ib.setBuffer(this.engine, new Uint16Array(triangles0));
 
         const renderable = Filament.EntityManager.get().create();

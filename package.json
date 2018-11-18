@@ -7,6 +7,7 @@
     "watch": "webpack --mode development --watch"
   },
   "devDependencies": {
+    "@types/gl-matrix": "^2.4.4",
     "ts-loader": "^5.0.0",
     "tslint": "^5.11.0",
     "typescript": "^3.0.0",
@@ -14,6 +15,7 @@
     "webpack-cli": "^3.1.2"
   },
   "dependencies": {
+    "gl-matrix": "^2.8.1",
     "typed-web-workers": "^2.1.1"
   }
 }

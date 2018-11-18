@@ -39,6 +39,7 @@ declare module Filament {
                          bufindex: number,
                          atype: VertexBuffer$AttributeType,
                          offset: number, stride: number): VertexBuffer$Builder;
+        public normalized(attrib: VertexAttribute): VertexBuffer$Builder;
         public build(engine: Engine): VertexBuffer;
     }
 
