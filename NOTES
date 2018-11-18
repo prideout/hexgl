@@ -1,5 +1,6 @@
-Add the ship and its textures to assets / geometry
-Draw tracks and scrapers
+Briefer enums?
+Compute tangents
+Draw scrapers
 Draw ship
 Implement ChaseCamera
 Implement keyboard controls
@@ -9,6 +10,7 @@ Faster, more progressive loading
     Replace geometry with binary files
     Replace PNG with KTX
 Implement other game features
+contribute to DefinitelyTyped
 
 ---
 

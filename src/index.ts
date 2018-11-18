@@ -13,6 +13,9 @@ const iblUrl = `${environ}_ibl${iblSuffix}.ktx.bmp`;
 const skySmallUrl = `${environ}_skybox_tiny.ktx.bmp`;
 const skyLargeUrl = `${environ}_skybox.ktx.bmp`;
 const tracksMaterialUrl = "materials/tracks.filamat";
+const tracksDiffuseUrl = "tracks/diffuse.png";
+const tracksSpecularUrl = "tracks/specular.png";
+const tracksNormalUrl = "tracks/normal.png";
 
 class App {
     public canvas: HTMLCanvasElement;
@@ -41,21 +44,14 @@ class App {
         this.view.setCamera(this.camera);
         this.view.setScene(this.scene);
 
-        Filament.fetch([skyLargeUrl, tracksMaterialUrl], () => {
-
-            const triangles0 = processMesh(Track.faces, Track.vertices, Track.uvs, Track.normals);
-            const triangles1 = processMesh(Scrapers1.faces, Scrapers1.vertices, Scrapers1.uvs, Scrapers1.normals);
-            const triangles2 = processMesh(Scrapers2.faces, Scrapers2.vertices, Scrapers2.uvs, Scrapers2.normals);
-            const triangles3 = processMesh(Ship.faces, Ship.vertices, Ship.uvs, Ship.normals);
-
-            console.info(Track.vertices.length / 3, triangles0.length / 3, Math.max.apply(null, triangles0));
-            console.info(Scrapers1.vertices.length / 3, triangles1.length / 3, Math.max.apply(null, triangles1));
-            console.info(Scrapers2.vertices.length / 3, triangles2.length / 3, Math.max.apply(null, triangles2));
-            console.info(Ship.vertices.length / 3, triangles3.length / 3, Math.max.apply(null, triangles3));
-
-            this.engine.destroySkybox(this.skybox);
-            this.skybox = this.engine.createSkyFromKtx(skyLargeUrl);
-            this.scene.setSkybox(this.skybox);
+        Filament.fetch([
+            skyLargeUrl,
+            tracksMaterialUrl,
+            tracksDiffuseUrl,
+            tracksSpecularUrl,
+            tracksNormalUrl,
+        ], () => {
+            this.onload();
         });
 
         const eye = [0, 0, 4];
@@ -70,12 +66,94 @@ class App {
         window.requestAnimationFrame(this.render);
     }
 
-    public render() {
+    private onload() {
+
+        const sampler = new Filament.TextureSampler(
+            Filament.MinFilter.LINEAR_MIPMAP_LINEAR,
+            Filament.MagFilter.LINEAR,
+            Filament.WrapMode.REPEAT);
+
+        const diffuse = this.engine.createTextureFromPng(tracksDiffuseUrl);
+        const specular = this.engine.createTextureFromPng(tracksSpecularUrl);
+        const normal = this.engine.createTextureFromPng(tracksNormalUrl);
+
+        const material = this.engine.createMaterial(tracksMaterialUrl);
+        const matinstance = material.createInstance();
+        matinstance.setTextureParameter("diffuse", diffuse, sampler);
+        matinstance.setTextureParameter("specular", specular, sampler);
+        matinstance.setTextureParameter("normal", normal, sampler);
+
+        const triangles0 = processMesh(Track.faces, Track.vertices, Track.uvs, Track.normals);
+        const triangles1 = processMesh(Scrapers1.faces, Scrapers1.vertices, Scrapers1.uvs,
+                Scrapers1.normals);
+        const triangles2 = processMesh(Scrapers2.faces, Scrapers2.vertices, Scrapers2.uvs,
+                Scrapers2.normals);
+        const triangles3 = processMesh(Ship.faces, Ship.vertices, Ship.uvs, Ship.normals);
+
+        console.info(Track.vertices.length / 3, triangles0.length / 3,
+                Math.max.apply(null, triangles0));
+        console.info(Scrapers1.vertices.length / 3, triangles1.length / 3,
+                Math.max.apply(null, triangles1));
+        console.info(Scrapers2.vertices.length / 3, triangles2.length / 3,
+                Math.max.apply(null, triangles2));
+        console.info(Ship.vertices.length / 3, triangles3.length / 3,
+                Math.max.apply(null, triangles3));
+
+        // this.tangents = new Uint16Array(4 * nverts);
+        // for (var i = 0; i < nverts; ++i) {
+        //     const src = this.vertices.subarray(i * 3, i * 3 + 3);
+        //     const dst = this.tangents.subarray(i * 4, i * 4 + 4);
+        //     const n = vec3.normalize(vec3.create(), src);
+        //     const b = vec3.cross(vec3.create(), n, [0, 1, 0]);
+        //     vec3.normalize(b, b);
+        //     const t = vec3.cross(vec3.create(), b, n);
+        //     const q = quat.fromMat3(quat.create(), [
+        //             t[0], t[1], t[2], b[0], b[1], b[2], n[0], n[1], n[2]]);
+        //     vec4.packSnorm16(dst, q);
+        // }
+
+        const VertexAttribute = Filament.VertexAttribute;
+        const AttributeType = Filament.VertexBuffer$AttributeType;
+        const IndexType = Filament.IndexBuffer$IndexType;
+        const PrimitiveType = Filament.RenderableManager$PrimitiveType;
+
+        const vb = Filament.VertexBuffer.Builder()
+            .vertexCount(Track.vertices.length / 3)
+            .bufferCount(2)
+            .attribute(VertexAttribute.POSITION, 0, AttributeType.FLOAT3, 0, 0)
+            // .attribute(VertexAttribute.TANGENTS, 1, AttributeType.SHORT4, 0, 0)
+            // .normalized(VertexAttribute.TANGENTS)
+            .build(this.engine);
+
+        const ib = Filament.IndexBuffer.Builder()
+            .indexCount(triangles0.length)
+            .bufferType(IndexType.USHORT)
+            .build(this.engine);
+
+        vb.setBufferAt(this.engine, 0, new Float32Array(Track.vertices));
+        // vb.setBufferAt(this.engine, 1, icosphere.tangents);
+        ib.setBuffer(this.engine, new Uint16Array(triangles0));
+
+        const renderable = Filament.EntityManager.get().create();
+        this.scene.addEntity(renderable);
+
+        Filament.RenderableManager.Builder(1)
+            .boundingBox([ [-1, -1, -1], [1, 1, 1] ])
+            .material(0, matinstance)
+            .geometry(0, PrimitiveType.TRIANGLES, vb, ib)
+            .build(this.engine, renderable);
+
+        this.engine.destroySkybox(this.skybox);
+        this.skybox = this.engine.createSkyFromKtx(skyLargeUrl);
+        this.scene.setSkybox(this.skybox);
+    }
+
+    private render() {
         this.renderer.render(this.swapChain, this.view);
         window.requestAnimationFrame(this.render);
     }
 
-    public resize() {
+    private resize() {
         const dpr = window.devicePixelRatio;
         const width = this.canvas.width = window.innerWidth * dpr;
         const height = this.canvas.height = window.innerHeight * dpr;
@@ -89,6 +167,7 @@ class App {
 }
 
 Filament.init([skySmallUrl, iblUrl], () => {
+    // tslint:disable-next-line:no-string-literal
     window["app"] = new App(document.getElementsByTagName("canvas")[0]);
 });
 
