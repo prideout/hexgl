@@ -1,13 +1,7 @@
-interface Geometry {
-    metadata: any;
-    scale: number;
-    [key: string]: any;
-}
-
-declare const TrackVertices: Array<number>;
-declare const TrackNormals: Array<number>;
-declare const TrackUvs: Array<number>;
-declare const TrackFaces: Array<number>;
+declare const TrackVertices: number[];
+declare const TrackNormals: number[];
+declare const TrackUvs: number[];
+declare const TrackFaces: number[];
 
 export const Track = {
     "metadata": {

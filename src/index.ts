@@ -4,6 +4,7 @@ import { createWorker, ITypedWorker } from "typed-web-workers";
 import { processMesh } from "./meshloader";
 import { Scrapers1 } from "./scrapers1";
 import { Scrapers2 } from "./scrapers2";
+import { Ship } from "./ship";
 import { Track } from "./track";
 
 const iblSuffix = Filament.getSupportedFormatSuffix("etc s3tc");
@@ -45,10 +46,12 @@ class App {
             const triangles0 = processMesh(Track.faces, Track.vertices, Track.uvs, Track.normals);
             const triangles1 = processMesh(Scrapers1.faces, Scrapers1.vertices, Scrapers1.uvs, Scrapers1.normals);
             const triangles2 = processMesh(Scrapers2.faces, Scrapers2.vertices, Scrapers2.uvs, Scrapers2.normals);
+            const triangles3 = processMesh(Ship.faces, Ship.vertices, Ship.uvs, Ship.normals);
 
             console.info(Track.vertices.length / 3, triangles0.length / 3, Math.max.apply(null, triangles0));
             console.info(Scrapers1.vertices.length / 3, triangles1.length / 3, Math.max.apply(null, triangles1));
             console.info(Scrapers2.vertices.length / 3, triangles2.length / 3, Math.max.apply(null, triangles2));
+            console.info(Ship.vertices.length / 3, triangles3.length / 3, Math.max.apply(null, triangles3));
 
             this.engine.destroySkybox(this.skybox);
             this.skybox = this.engine.createSkyFromKtx(skyLargeUrl);
