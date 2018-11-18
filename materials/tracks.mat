@@ -1,0 +1,35 @@
+material {
+    name : Lit,
+    requires : [
+        uv0
+    ],
+    shadingModel : lit,
+    parameters : [
+        {
+            type : sampler2d,
+            name : diffuse
+        },
+        {
+            type : sampler2d,
+            name : specular
+        },
+        {
+            type : sampler2d,
+            name : normal
+        }
+    ],
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        material.normal = texture(materialParams_normal, getUV0()).xyz * 2.0 - 1.0;
+        prepareMaterial(material);
+        material.baseColor = texture(materialParams_diffuse, getUV0());
+
+        // TODO: find luminance for r, g, b and pack it into alpha channel for diffuse
+        material.roughness = texture(materialParams_specular, getUV0()).r;
+
+        material.metallic = 1.0;
+        material.clearCoat = 1.0;
+    }
+}
