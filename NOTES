@@ -1,0 +1,33 @@
+
+http://xeogl.org/examples/#materials_specular_Hoverbike
+
+var camera = new THREE.PerspectiveCamera( 70, ctx.width / ctx.height, 1, 60000 );
+
+var ship = ctx.createMesh(scene, this.lib.get("geometries", "ship.feisar"), -1134*2, 10, -443*2, this.materials.ship);
+
+var scene = new THREE.Scene();
+scene.add( camera );
+scene.add( new THREE.AmbientLight( ambient ) );
+
+// SUN
+var sun = new THREE.DirectionalLight( diffuse, 1.5, 30000 );
+sun.position.set( -4000, 1200, 1800 );
+sun.lookAt(new THREE.Vector3());
+
+var track = ctx.createMesh(scene, this.lib.get("geometries", "track.cityscape"), 0, -5, 0, this.materials.track);
+
+ctx.components.cameraChase = new bkcore.hexgl.CameraChase({
+        target: ship,
+        camera: camera,
+        cameraCube: ctx.manager.get("sky").camera,
+        lerp: 0.5,
+        yoffset: 8.0,
+        zoffset: 10.0,
+        viewOffset: 10.0
+    });
+
+ShipControls has has collision and height maps
+
+https://github.com/tapio/darkcorners/tree/master/assets/skyboxes/stormy-day
+
+Give credit to tracks texture artist too
