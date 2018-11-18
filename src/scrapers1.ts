@@ -23,9 +23,6 @@ export const Scrapers1 = {
     },
     "scale" : 1.000000,
     "materials": [	{
-        "DbgColor" : 15658734,
-        "DbgIndex" : 0,
-        "DbgName" : "07___Default",
         "colorAmbient" : [0.588235, 0.588235, 0.588235],
         "colorDiffuse" : [0.588235, 0.588235, 0.588235],
         "colorSpecular" : [0.0, 0.0, 0.0],

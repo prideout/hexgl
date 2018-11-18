@@ -1,3 +1,4 @@
+Add the ship and its textures to assets / geometry
 Draw tracks and scrapers
 Draw ship
 Implement ChaseCamera

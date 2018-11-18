@@ -1,49 +1,49 @@
 declare module Filament {
-    function getSupportedFormatSuffix(string): void;
-    function init(assets: Array<string>, onready: Function): void;
-    function fetch(assets: Array<string>, onready: Function): void;
+    function getSupportedFormatSuffix(desired: string): void;
+    function init(assets: string[], onready: () => void): void;
+    function fetch(assets: string[], onready: () => void): void;
 
     class Skybox {}
     class SwapChain {}
 
-    enum Camera$Fov { VERTICAL, HORIZONTAL, }
+    enum Camera$Fov { VERTICAL, HORIZONTAL }
 
     class Renderer {
-        render(swapChain: SwapChain, view: View): void;
+        public render(swapChain: SwapChain, view: View): void;
     }
 
     class Camera {
-        lookAt(eye: Array<number>, center: Array<number>, up: Array<number>): void;
-        setProjectionFov(fovInDegrees: number, aspect: number,
-                near: number, far: number, fov: Camera$Fov): void;
+        public lookAt(eye: number[], center: number[], up: number[]): void;
+        public setProjectionFov(fovInDegrees: number, aspect: number,
+                                near: number, far: number, fov: Camera$Fov): void;
     }
 
     class IndirectLight {
-        setIntensity(intensity: number);
+        public setIntensity(intensity: number);
     }
 
     class Scene {
-        setSkybox(sky: Skybox);
-        setIndirectLight(ibl: IndirectLight);
+        public setSkybox(sky: Skybox);
+        public setIndirectLight(ibl: IndirectLight);
     }
 
     class View {
-        setCamera(camera: Camera);
-        setScene(scene: Scene);
-        setViewport(viewport: Array<number>);
+        public setCamera(camera: Camera);
+        public setScene(scene: Scene);
+        public setViewport(viewport: number[]);
     }
 
     class Engine {
-        static create(HTMLCanvasElement): Engine;
-        getSupportedFormatSuffix(string): void;
-        init(assets: Array<string>, onready: Function): void;
-        createScene(): Scene;
-        createSkyFromKtx(url: string): Skybox;
-        createIblFromKtx(url: string): IndirectLight;
-        createSwapChain(): SwapChain;
-        createRenderer(): Renderer;
-        createCamera(): Camera;
-        createView(): View;
-        destroySkybox(skybox: Skybox): void;
+        public static create(HTMLCanvasElement): Engine;
+        public getSupportedFormatSuffix(suffix: string): void;
+        public init(assets: string[], onready: () => void): void;
+        public createScene(): Scene;
+        public createSkyFromKtx(url: string): Skybox;
+        public createIblFromKtx(url: string): IndirectLight;
+        public createSwapChain(): SwapChain;
+        public createRenderer(): Renderer;
+        public createCamera(): Camera;
+        public createView(): View;
+        public destroySkybox(skybox: Skybox): void;
     }
 }

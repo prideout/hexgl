@@ -1,0 +1,18 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "rules": {
+        "interface-name" : false,
+        "no-bitwise" : false,
+        "no-string-literal" : false,
+        "no-console" : false,
+        "one-variable-per-declaration" : false,
+        "space-within-parens": true,
+        "no-internal-module": false,
+        "no-namespace": false,
+        "max-classes-per-file": false
+    },
+    "rulesDirectory": []
+}
