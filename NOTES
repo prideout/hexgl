@@ -1,4 +1,3 @@
-Draw ship
 Draw scrapers
 Implement ChaseCamera
 Fix UV's on tracks ... without dereferencing the index buffer somehow?

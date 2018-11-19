@@ -7,11 +7,17 @@ declare module Filament {
     type float2 = number[];
     type float3 = number[];
     type float4 = number[];
+    type mat3 = number[];
+    type mat4 = number[];
 
     class Entity {}
     class Skybox {}
     class Texture {}
     class SwapChain {}
+
+    class TransformManager$Instance {
+        public delete(): void;
+    }
 
     class TextureSampler {
         constructor(minfilter: MinFilter, magfilter: MagFilter, wrapmode: WrapMode);
@@ -115,6 +121,11 @@ declare module Filament {
         public setViewport(viewport: number[]);
     }
 
+    class TransformManager {
+        public getInstance(entity: Entity): TransformManager$Instance;
+        public setTransform(instance: TransformManager$Instance, xform: mat4): void;
+    }
+
     class Engine {
         public static create(HTMLCanvasElement): Engine;
         public createCamera(): Camera;
@@ -128,6 +139,7 @@ declare module Filament {
         public createView(): View;
         public destroySkybox(skybox: Skybox): void;
         public getSupportedFormatSuffix(suffix: string): void;
+        public getTransformManager(): TransformManager;
         public init(assets: string[], onready: () => void): void;
     }
 
