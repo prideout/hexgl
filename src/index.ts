@@ -37,7 +37,7 @@ class App {
         this.skybox = this.engine.createSkyFromKtx(skySmallUrl);
         this.scene.setSkybox(this.skybox);
         this.indirectLight = this.engine.createIblFromKtx(iblUrl);
-        this.indirectLight.setIntensity(1000000); // extra zero :)
+        this.indirectLight.setIntensity(100000);
         this.scene.setIndirectLight(this.indirectLight);
         this.swapChain = this.engine.createSwapChain();
         this.renderer = this.engine.createRenderer();
@@ -58,10 +58,18 @@ class App {
 
         const shippos = [-1134 * 2, 15, -443 * 2];
 
-        const eye =    [ 0, -1000,  0];
+        const eye =    [ 0, 3000,  0];
         const center = [ 0,  0,  0];
         const up =     [ 0,  0,  1];
         this.camera.lookAt(eye, center, up);
+
+        const sunlight = Filament.EntityManager.get().create();
+        this.scene.addEntity(sunlight);
+        Filament.LightManager.Builder(Filament.LightManager$Type.SUN)
+            .color([0.98, 0.92, 0.89])
+            .intensity(1100000.0)
+            .direction([0, -1, 0])
+            .build(this.engine, sunlight);
 
         this.render = this.render.bind(this);
         this.resize = this.resize.bind(this);
@@ -71,28 +79,89 @@ class App {
     }
 
     private onload() {
+        const material = this.engine.createMaterial(tracksMaterialUrl);
+
         const sampler = new Filament.TextureSampler(
-            Filament.MinFilter.LINEAR_MIPMAP_LINEAR,
-            Filament.MagFilter.LINEAR,
+            Filament.MinFilter.LINEAR_MIPMAP_LINEAR, Filament.MagFilter.LINEAR,
             Filament.WrapMode.REPEAT);
 
+        const VertexAttribute = Filament.VertexAttribute;
+        const AttributeType = Filament.VertexBuffer$AttributeType;
+        const IndexType = Filament.IndexBuffer$IndexType;
+        const PrimitiveType = Filament.RenderableManager$PrimitiveType;
+
+        const matinstance = material.createInstance();
         const diffuse = this.engine.createTextureFromPng(tracksDiffuseUrl);
         const specular = this.engine.createTextureFromPng(tracksSpecularUrl);
         const normal = this.engine.createTextureFromPng(tracksNormalUrl);
-
-        const material = this.engine.createMaterial(tracksMaterialUrl);
-        const matinstance = material.createInstance();
         matinstance.setTextureParameter("diffuse", diffuse, sampler);
         matinstance.setTextureParameter("specular", specular, sampler);
         matinstance.setTextureParameter("normal", normal, sampler);
 
-        const [triangles0, uvs0] = processMesh(Track.faces, Track.vertices, Track.uvs, Track.normals);
-        console.info(`TRACK
-            nverts=${Track.vertices.length / 3}
-            nuvs=${Track.uvs[0].length / 2}
-            ntris=${triangles0.length / 3}
-            maxind=${Math.max.apply(null, triangles0)}`);
+        const [verts, tcoords, norms] = processMesh(Track.faces, Track.vertices, Track.uvs, Track.normals);
+        const nverts = verts.length / 3;
+        const ntriangles = nverts / 3;
+        const vertices = new Float32Array(verts);
+        const normals = new Float32Array(norms);
+        const texcoords = new Float32Array(tcoords);
+        const tangents = new Uint16Array(4 * nverts);
 
+        const maxp = vec3.fromValues(-10000, -10000, -10000);
+        const minp = vec3.fromValues(+10000,  10000,  10000);
+
+        for (let i = 0; i < nverts; ++i) {
+            const src = normals.subarray(i * 3, i * 3 + 3) as vec3;
+            const dst = tangents.subarray(i * 4, i * 4 + 4) as vec4;
+            const n = vec3.normalize(vec3.create(), src);
+            const b = vec3.cross(vec3.create(), n, [0, 1, 0]);
+            vec3.normalize(b, b);
+            const t = vec3.cross(vec3.create(), b, n);
+            const m3 = mat3.fromValues(t[0], t[1], t[2], b[0], b[1], b[2], n[0], n[1], n[2]);
+            const q = [0, 0, 0, 1]; // quat.fromMat3(quat.create(), m3);
+            vec4_packSnorm16(dst, q);
+
+            const v = vertices.subarray(i * 3, i * 3 + 3) as vec3;
+            vec3.max(maxp, maxp, v);
+            vec3.min(minp, minp, v);
+        }
+        console.info(nverts, minp, maxp);
+
+        const vb = Filament.VertexBuffer.Builder()
+            .vertexCount(nverts)
+            .bufferCount(3)
+            .attribute(VertexAttribute.POSITION, 0, AttributeType.FLOAT3, 0, 0)
+            .attribute(VertexAttribute.TANGENTS, 1, AttributeType.SHORT4, 0, 0)
+            .attribute(VertexAttribute.UV0, 2, AttributeType.FLOAT2, 0, 0)
+            .normalized(VertexAttribute.TANGENTS)
+            .build(this.engine);
+
+        vb.setBufferAt(this.engine, 0, vertices);
+        vb.setBufferAt(this.engine, 1, tangents);
+        vb.setBufferAt(this.engine, 2, texcoords);
+
+        // Filament requires an index buffer so unfortunately we need to create a trivial one.
+        const dummy = new Uint16Array(ntriangles * 3);
+        for (let i = 0; i < dummy.length; i++) {
+            dummy[i] = i;
+        }
+
+        const ib = Filament.IndexBuffer.Builder()
+            .indexCount(dummy.length)
+            .bufferType(IndexType.USHORT)
+            .build(this.engine);
+
+        ib.setBuffer(this.engine, dummy);
+
+        const renderable = Filament.EntityManager.get().create();
+        this.scene.addEntity(renderable);
+
+        Filament.RenderableManager.Builder(1)
+            .boundingBox([ [-1000, -1000, -1000], [1000, 1000, 1000] ])
+            .material(0, matinstance)
+            .geometry(0, PrimitiveType.TRIANGLES, vb, ib)
+            .build(this.engine, renderable);
+
+            /*
         const [triangles1, uvs1] = processMesh(Scrapers1.faces, Scrapers1.vertices, Scrapers1.uvs,
             Scrapers1.normals);
         console.info(`SCRAPERS1
@@ -115,57 +184,7 @@ class App {
             nuvs=${Ship.uvs[0].length / 2}
             ntris=${triangles3.length / 3}
             maxind=${Math.max.apply(null, triangles3)}`);
-
-        const nverts = Track.vertices.length / 3;
-        const vertices = new Float32Array(Track.vertices);
-        const tangents = new Uint16Array(4 * nverts);
-        const texcoords = new Float32Array(uvs0);
-
-        for (let i = 0; i < nverts; ++i) {
-            const src = vertices.subarray(i * 3, i * 3 + 3) as vec3;
-            const dst = tangents.subarray(i * 4, i * 4 + 4) as vec4;
-            const n = vec3.normalize(vec3.create(), src);
-            const b = vec3.cross(vec3.create(), n, [0, 1, 0]);
-            vec3.normalize(b, b);
-            const t = vec3.cross(vec3.create(), b, n);
-            const m3 = mat3.fromValues(t[0], t[1], t[2], b[0], b[1], b[2], n[0], n[1], n[2]);
-            const q = quat.fromMat3(quat.create(), m3);
-            vec4_packSnorm16(dst, q);
-        }
-
-        const VertexAttribute = Filament.VertexAttribute;
-        const AttributeType = Filament.VertexBuffer$AttributeType;
-        const IndexType = Filament.IndexBuffer$IndexType;
-        const PrimitiveType = Filament.RenderableManager$PrimitiveType;
-
-        const vb = Filament.VertexBuffer.Builder()
-            .vertexCount(nverts)
-            .bufferCount(3)
-            .attribute(VertexAttribute.POSITION, 0, AttributeType.FLOAT3, 0, 0)
-            .attribute(VertexAttribute.TANGENTS, 1, AttributeType.SHORT4, 0, 0)
-            .attribute(VertexAttribute.UV0, 2, AttributeType.FLOAT2, 0, 0)
-            .normalized(VertexAttribute.TANGENTS)
-            .build(this.engine);
-
-        vb.setBufferAt(this.engine, 0, vertices);
-        vb.setBufferAt(this.engine, 1, tangents);
-        vb.setBufferAt(this.engine, 2, texcoords);
-
-        const ib = Filament.IndexBuffer.Builder()
-            .indexCount(triangles0.length)
-            .bufferType(IndexType.USHORT)
-            .build(this.engine);
-
-        ib.setBuffer(this.engine, new Uint16Array(triangles0));
-
-        const renderable = Filament.EntityManager.get().create();
-        this.scene.addEntity(renderable);
-
-        Filament.RenderableManager.Builder(1)
-            .boundingBox([ [-1, -1, -1], [1, 1, 1] ])
-            .material(0, matinstance)
-            .geometry(0, PrimitiveType.TRIANGLES, vb, ib)
-            .build(this.engine, renderable);
+*/
 
         this.engine.destroySkybox(this.skybox);
         this.skybox = this.engine.createSkyFromKtx(skyLargeUrl);
@@ -186,7 +205,7 @@ class App {
         const aspect = width / height;
         const Fov = Filament.Camera$Fov;
         const fov = aspect < 1 ? Fov.HORIZONTAL : Fov.VERTICAL;
-        this.camera.setProjectionFov(45, aspect, 1.0, 2000.0, fov);
+        this.camera.setProjectionFov(45, aspect, 1.0, 20000.0, fov);
     }
 }
 

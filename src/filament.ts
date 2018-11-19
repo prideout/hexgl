@@ -59,6 +59,18 @@ declare module Filament {
         public build(engine: Engine, entity: Entity): void;
     }
 
+    class LightManager$Builder {
+        public color(rgb: float3): LightManager$Builder;
+        public intensity(value: number): LightManager$Builder;
+        public position(value: float3): LightManager$Builder;
+        public direction(value: float3): LightManager$Builder;
+        public build(engine: Engine, entity: Entity): void;
+    }
+
+    class LightManager {
+        public static Builder(ltype: LightManager$Type): LightManager$Builder;
+    }
+
     class RenderableManager {
         public static Builder(ngeos: number): RenderableManager$Builder;
     }

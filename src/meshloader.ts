@@ -180,27 +180,25 @@ export function processMesh(faces, verts, uvs, normals) {
         }
     }
 
-    const texcoords = [];
+    const derefedTexcoords = [];
+    const derefedVertices = [];
+    const derefedNormals = [];
 
-    const transformFaceUvsToVertexUvs = true;
-    if (transformFaceUvsToVertexUvs) {
-        for (let f = 0, nfaces = tris.length / 3; f < nfaces; f++) {
-            const thisface = faceVertexUvs[0][f];
-            const uv0 = thisface[0];
-            const uv1 = thisface[1];
-            const uv2 = thisface[2];
-            const i0 = tris[f * 3 + 0];
-            const i1 = tris[f * 3 + 1];
-            const i2 = tris[f * 3 + 2];
-            texcoords[i0 * 2 + 0] = uv0[0];
-            texcoords[i0 * 2 + 1] = uv0[1];
-            texcoords[i1 * 2 + 0] = uv1[0];
-            texcoords[i1 * 2 + 1] = uv1[1];
-            texcoords[i2 * 2 + 0] = uv2[0];
-            texcoords[i2 * 2 + 1] = uv2[1];
+    for (let f = 0, nfaces = tris.length / 3; f < nfaces; f++) {
+        const thisface = faceVertexUvs[0][f];
+        for (let side = 0; side < 3; ++side) {
+            const i0 = tris[f * 3 + side];
+            derefedVertices.push(verts[i0 * 3 + 0]);
+            derefedVertices.push(verts[i0 * 3 + 1]);
+            derefedVertices.push(verts[i0 * 3 + 2]);
+            derefedNormals.push(normals[i0 * 3 + 0]);
+            derefedNormals.push(normals[i0 * 3 + 1]);
+            derefedNormals.push(normals[i0 * 3 + 2]);
+            const uv0 = thisface[side];
+            derefedTexcoords.push(uv0[0]);
+            derefedTexcoords.push(uv0[1]);
         }
     }
 
-    console.info(`# of uv coords = ${faceVertexUvs[0].length}, quads = ${nquads}`);
-    return [tris, texcoords];
+    return [derefedVertices, derefedTexcoords, derefedNormals];
 }
