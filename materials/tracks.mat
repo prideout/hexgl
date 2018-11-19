@@ -22,7 +22,7 @@ material {
 
 fragment {
     void material(inout MaterialInputs material) {
-        material.normal = - ( texture(materialParams_normal, getUV0()).xyz * 2.0 - 1.0 );
+        material.normal = texture(materialParams_normal, getUV0()).xyz * 2.0 - 1.0;
         prepareMaterial(material);
         material.baseColor = texture(materialParams_diffuse, getUV0());
 
