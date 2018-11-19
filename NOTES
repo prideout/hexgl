@@ -1,5 +1,4 @@
-Allow camera spin
-load JSON for meshes async
+Load JSON for meshes async
 Fix normals on ship
 Implement ChaseCamera
 Fix UV's on tracks ... without dereferencing the index buffer somehow?

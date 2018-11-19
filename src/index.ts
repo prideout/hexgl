@@ -34,7 +34,7 @@ const scrapers2SpecularUrl = "scrapers2/specular.png";
 const scrapers2NormalUrl = "scrapers2/normal.png";
 
 const shippos = [-1134 * 2, 900, -443 * 2];
-const camheight = 1000;
+const camheight = 100;
 
 Filament.init([skySmallUrl, iblUrl, tracksMaterialUrl ], () => {
     // tslint:disable-next-line:no-string-literal
@@ -57,7 +57,7 @@ class App {
 
     constructor(canvas) {
         this.canvas = canvas;
-        this.trackball = new Trackball(canvas, {startSpin: 0.035});
+        this.trackball = new Trackball(canvas, {startSpin: 0.0});
         this.engine = Filament.Engine.create(canvas);
         this.scene = this.engine.createScene();
         this.skybox = this.engine.createSkyFromKtx(skySmallUrl);
@@ -159,10 +159,21 @@ class App {
 
     private render() {
 
-        const eye =    [ shippos[0], camheight,  shippos[2] ];
-        const center = [ shippos[0], shippos[1], shippos[2] ];
-        const up =     [ 0,  0,  1 ];
-        this.camera.lookAt(eye, center, up);
+        const eye =    vec3.fromValues(0, 0, 1);
+        const center = vec3.fromValues(0, 0, 0);
+        const xform = this.trackball.getMatrix() as unknown;
+        const targetToEyeDir = vec3.sub(vec3.create(), eye, center);
+        vec3.transformMat4(targetToEyeDir, targetToEyeDir, xform as mat4);
+
+        const dx = targetToEyeDir[0];
+        const dy = targetToEyeDir[1];
+        const dz = targetToEyeDir[2];
+
+        const eye2 =    [ shippos[0] + camheight * dx, shippos[1] + camheight * dy,  shippos[2] + camheight * dz ];
+        const center2 = [ shippos[0], shippos[1], shippos[2] ];
+        const up2 =     [ 0,  1,  0 ];
+
+        this.camera.lookAt(eye2, center2, up2);
 
         // const tcm = this.engine.getTransformManager();
         // const inst = tcm.getInstance(this.ship);
