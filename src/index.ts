@@ -4,10 +4,26 @@ import { mat3, mat4, quat, vec3, vec4 } from "gl-matrix";
 import { createWorker, ITypedWorker } from "typed-web-workers";
 import { vec4_packSnorm16 } from "./math";
 import { processMesh } from "./meshloader";
-import { Scrapers1 } from "./scrapers1";
-import { Scrapers2 } from "./scrapers2";
-import { Ship } from "./ship";
-import { Track } from "./track";
+
+declare const TrackVertices: number[];
+declare const TrackNormals: number[];
+declare const TrackUvs: number[];
+declare const TrackFaces: number[];
+
+declare const ShipVertices: number[];
+declare const ShipNormals: number[];
+declare const ShipUvs: number[];
+declare const ShipFaces: number[];
+
+declare const Scrapers1Vertices: number[];
+declare const Scrapers1Normals: number[];
+declare const Scrapers1Uvs: number[];
+declare const Scrapers1Faces: number[];
+
+declare const Scrapers2Vertices: number[];
+declare const Scrapers2Normals: number[];
+declare const Scrapers2Uvs: number[];
+declare const Scrapers2Faces: number[];
 
 const iblSuffix = Filament.getSupportedFormatSuffix("etc s3tc");
 const environ = "env/syferfontein_18d_clear_2k";
@@ -33,7 +49,7 @@ const scrapers2DiffuseUrl = "scrapers2/diffuse.png";
 const scrapers2SpecularUrl = "scrapers2/specular.png";
 const scrapers2NormalUrl = "scrapers2/normal.png";
 
-const shippos = [-1134 * 2, 900, -443 * 2];
+const shippos = [-1134 * 2, 400, -443 * 2];
 const camheight = 100;
 
 Filament.init([skySmallUrl, iblUrl, tracksMaterialUrl ], () => {
@@ -57,7 +73,10 @@ class App {
 
     constructor(canvas) {
         this.canvas = canvas;
-        this.trackball = new Trackball(canvas, {startSpin: 0.0});
+        this.trackball = new Trackball(canvas, {
+            clampTilt: 0.9 * Math.PI / 2,
+            startSpin: 0.0,
+        });
         this.engine = Filament.Engine.create(canvas);
         this.scene = this.engine.createScene();
         this.skybox = this.engine.createSkyFromKtx(skySmallUrl);
@@ -84,11 +103,19 @@ class App {
         Filament.fetch([ shipDiffuseUrl, shipSpecularUrl, shipNormalUrl ],
                 this.onLoadedShip.bind(this));
 
-        Filament.fetch([ scrapers1DiffuseUrl, scrapers1SpecularUrl, scrapers1NormalUrl ],
-                this.onLoadedScrapers1.bind(this));
+        Filament.fetch([ scrapers1DiffuseUrl, scrapers1SpecularUrl, scrapers1NormalUrl ], () => {
+            const script = document.createElement("script");
+            script.onload = this.onLoadedScrapers1.bind(this);
+            script.src = "scrapers1/geometry.js";
+            document.head.appendChild(script);
+        });
 
-        Filament.fetch([ scrapers2DiffuseUrl, scrapers2SpecularUrl, scrapers2NormalUrl ],
-                this.onLoadedScrapers2.bind(this));
+        Filament.fetch([ scrapers2DiffuseUrl, scrapers2SpecularUrl, scrapers2NormalUrl ], () => {
+            const script = document.createElement("script");
+            script.onload = this.onLoadedScrapers2.bind(this);
+            script.src = "scrapers2/geometry.js";
+            document.head.appendChild(script);
+        });
 
         const sunlight = Filament.EntityManager.get().create();
         this.scene.addEntity(sunlight);
@@ -108,7 +135,7 @@ class App {
     private onLoadedTracks() {
         const matinstance = this.material.createInstance();
         const tracks = this.createRenderable(tracksDiffuseUrl, tracksSpecularUrl, tracksNormalUrl,
-            Track.faces, Track.vertices, Track.uvs, Track.normals, matinstance);
+            TrackFaces, TrackVertices, [TrackUvs], TrackNormals, matinstance);
         this.scene.addEntity(tracks);
         this.engine.destroySkybox(this.skybox);
         this.skybox = this.engine.createSkyFromKtx(skyLargeUrl);
@@ -118,7 +145,7 @@ class App {
     private onLoadedShip() {
         const matinstance = this.material.createInstance();
         const ship = this.createRenderable(shipDiffuseUrl, shipSpecularUrl, shipNormalUrl,
-            Ship.faces, Ship.vertices, Ship.uvs, Ship.normals, matinstance);
+            ShipFaces, ShipVertices, [ShipUvs], ShipNormals, matinstance);
 
         const transform = mat4.fromTranslation(mat4.create(), shippos) as unknown;
         const tcm = this.engine.getTransformManager();
@@ -132,7 +159,7 @@ class App {
     private onLoadedScrapers1() {
         const matinstance = this.material.createInstance();
         const scrapers1 = this.createRenderable(scrapers1DiffuseUrl, scrapers1SpecularUrl, scrapers1NormalUrl,
-            Scrapers1.faces, Scrapers1.vertices, Scrapers1.uvs, Scrapers1.normals, matinstance);
+            Scrapers1Faces, Scrapers1Vertices, [Scrapers1Uvs], Scrapers1Normals, matinstance);
 
         const transform = mat4.fromTranslation(mat4.create(), [0, 0, 0]) as unknown;
         const tcm = this.engine.getTransformManager();
@@ -146,7 +173,7 @@ class App {
     private onLoadedScrapers2() {
         const matinstance = this.material.createInstance();
         const scrapers2 = this.createRenderable(scrapers2DiffuseUrl, scrapers2SpecularUrl, scrapers2NormalUrl,
-            Scrapers2.faces, Scrapers2.vertices, Scrapers2.uvs, Scrapers2.normals, matinstance);
+            Scrapers2Faces, Scrapers2Vertices, [Scrapers2Uvs], Scrapers2Normals, matinstance);
 
         const transform = mat4.fromTranslation(mat4.create(), [0, 0, 0]) as unknown;
         const tcm = this.engine.getTransformManager();
@@ -159,19 +186,18 @@ class App {
 
     private render() {
 
-        const eye =    vec3.fromValues(0, 0, 1);
-        const center = vec3.fromValues(0, 0, 0);
-        const xform = this.trackball.getMatrix() as unknown;
-        const targetToEyeDir = vec3.sub(vec3.create(), eye, center);
-        vec3.transformMat4(targetToEyeDir, targetToEyeDir, xform as mat4);
+        const eye = vec3.fromValues(0, 0, 1);
+        const xform = this.trackball.getMatrix() as unknown as mat4;
+        mat4.rotateX(xform, xform, -Math.PI * 0.5);
+        vec3.transformMat4(eye, eye, xform);
 
-        const dx = targetToEyeDir[0];
-        const dy = targetToEyeDir[1];
-        const dz = targetToEyeDir[2];
+        const dx = eye[0];
+        const dy = eye[1];
+        const dz = eye[2];
 
         const eye2 =    [ shippos[0] + camheight * dx, shippos[1] + camheight * dy,  shippos[2] + camheight * dz ];
         const center2 = [ shippos[0], shippos[1], shippos[2] ];
-        const up2 =     [ 0,  1,  0 ];
+        const up2 =     [ 0,  0,  1 ];
 
         this.camera.lookAt(eye2, center2, up2);
 
