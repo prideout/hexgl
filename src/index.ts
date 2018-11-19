@@ -25,6 +25,14 @@ const shipDiffuseUrl = "ship/diffuse.png";
 const shipSpecularUrl = "ship/specular.png";
 const shipNormalUrl = "ship/normal.png";
 
+const scrapers1DiffuseUrl = "scrapers1/diffuse.png";
+const scrapers1SpecularUrl = "scrapers1/specular.png";
+const scrapers1NormalUrl = "scrapers1/normal.png";
+
+const scrapers2DiffuseUrl = "scrapers2/diffuse.png";
+const scrapers2SpecularUrl = "scrapers2/specular.png";
+const scrapers2NormalUrl = "scrapers2/normal.png";
+
 const shippos = [-1134 * 2, 900, -443 * 2];
 const camheight = 1000;
 
@@ -45,9 +53,11 @@ class App {
     private renderer: Filament.Renderer;
     private sampler: Filament.TextureSampler;
     private material: Filament.Material;
+    private trackball: Trackball;
 
     constructor(canvas) {
         this.canvas = canvas;
+        this.trackball = new Trackball(canvas, {startSpin: 0.035});
         this.engine = Filament.Engine.create(canvas);
         this.scene = this.engine.createScene();
         this.skybox = this.engine.createSkyFromKtx(skySmallUrl);
@@ -74,17 +84,18 @@ class App {
         Filament.fetch([ shipDiffuseUrl, shipSpecularUrl, shipNormalUrl ],
                 this.onLoadedShip.bind(this));
 
-        const eye =    [ shippos[0], camheight,  shippos[2] ];
-        const center = [ shippos[0],    0,  shippos[2] ];
-        const up =     [ 0,  0,  1 ];
-        this.camera.lookAt(eye, center, up);
+        Filament.fetch([ scrapers1DiffuseUrl, scrapers1SpecularUrl, scrapers1NormalUrl ],
+                this.onLoadedScrapers1.bind(this));
+
+        Filament.fetch([ scrapers2DiffuseUrl, scrapers2SpecularUrl, scrapers2NormalUrl ],
+                this.onLoadedScrapers2.bind(this));
 
         const sunlight = Filament.EntityManager.get().create();
         this.scene.addEntity(sunlight);
         Filament.LightManager.Builder(Filament.LightManager$Type.SUN)
             .color([0.98, 0.92, 0.89])
             .intensity(1100000.0)
-            .direction([0, -1, 0])
+            .direction([0.5, -1, 0])
             .build(this.engine, sunlight);
 
         this.render = this.render.bind(this);
@@ -118,7 +129,46 @@ class App {
         this.scene.addEntity(ship);
     }
 
+    private onLoadedScrapers1() {
+        const matinstance = this.material.createInstance();
+        const scrapers1 = this.createRenderable(scrapers1DiffuseUrl, scrapers1SpecularUrl, scrapers1NormalUrl,
+            Scrapers1.faces, Scrapers1.vertices, Scrapers1.uvs, Scrapers1.normals, matinstance);
+
+        const transform = mat4.fromTranslation(mat4.create(), [0, 0, 0]) as unknown;
+        const tcm = this.engine.getTransformManager();
+        const inst = tcm.getInstance(scrapers1);
+        tcm.setTransform(inst, transform as number[]);
+        inst.delete();
+
+        this.scene.addEntity(scrapers1);
+    }
+
+    private onLoadedScrapers2() {
+        const matinstance = this.material.createInstance();
+        const scrapers2 = this.createRenderable(scrapers2DiffuseUrl, scrapers2SpecularUrl, scrapers2NormalUrl,
+            Scrapers2.faces, Scrapers2.vertices, Scrapers2.uvs, Scrapers2.normals, matinstance);
+
+        const transform = mat4.fromTranslation(mat4.create(), [0, 0, 0]) as unknown;
+        const tcm = this.engine.getTransformManager();
+        const inst = tcm.getInstance(scrapers2);
+        tcm.setTransform(inst, transform as number[]);
+        inst.delete();
+
+        this.scene.addEntity(scrapers2);
+    }
+
     private render() {
+
+        const eye =    [ shippos[0], camheight,  shippos[2] ];
+        const center = [ shippos[0], shippos[1], shippos[2] ];
+        const up =     [ 0,  0,  1 ];
+        this.camera.lookAt(eye, center, up);
+
+        // const tcm = this.engine.getTransformManager();
+        // const inst = tcm.getInstance(this.ship);
+        // tcm.setTransform(inst, this.trackball.getMatrix());
+        // inst.delete();
+
         this.renderer.render(this.swapChain, this.view);
         window.requestAnimationFrame(this.render);
     }

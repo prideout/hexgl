@@ -438,3 +438,8 @@ declare module Filament {
         MIRRORED_REPEAT,
     }
 }
+
+declare class Trackball {
+    constructor(canvas: HTMLCanvasElement, options: object);
+    public getMatrix(): number[];
+}
