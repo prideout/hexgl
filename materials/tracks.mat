@@ -22,14 +22,15 @@ material {
 
 fragment {
     void material(inout MaterialInputs material) {
-        material.normal = texture(materialParams_normal, getUV0()).xyz * 2.0 - 1.0;
+        material.normal = - ( texture(materialParams_normal, getUV0()).xyz * 2.0 - 1.0 );
         prepareMaterial(material);
         material.baseColor = texture(materialParams_diffuse, getUV0());
 
         // TODO: find luminance for r, g, b and pack it into alpha channel for diffuse
-        material.roughness = texture(materialParams_specular, getUV0()).r;
+        vec3 specular = texture(materialParams_specular, getUV0()).rgb;
+        material.roughness = 1.0 - length(specular);
 
-        material.metallic = 1.0;
-        material.clearCoat = 1.0;
+        material.metallic = 0.0;
+        material.clearCoat = 0.0;
     }
 }
