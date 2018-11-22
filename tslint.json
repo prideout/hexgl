@@ -11,7 +11,8 @@
         "space-within-parens": true,
         "no-internal-module": false,
         "no-namespace": false,
-        "max-classes-per-file": false
+        "max-classes-per-file": false,
+        "no-string-literal": false
     },
     "rulesDirectory": []
 }

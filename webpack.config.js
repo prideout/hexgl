@@ -4,7 +4,7 @@ const path = require('path');
 
 module.exports = {
     devtool: 'source-map',
-    entry: './src/index.ts',
+    entry: './src/app.ts',
     output:  {
         path: path.resolve(__dirname, '../lightrace_pages')
     },

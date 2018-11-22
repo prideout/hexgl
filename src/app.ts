@@ -1,59 +1,16 @@
 import "./filament";
 
+import * as urls from "./urls";
+
 import { mat3, mat4, quat, vec3, vec4 } from "gl-matrix";
 import { createWorker, ITypedWorker } from "typed-web-workers";
 import { vec4_packSnorm16 } from "./math";
 import { processMesh } from "./meshloader";
 
-declare const TrackVertices: number[];
-declare const TrackNormals: number[];
-declare const TrackUvs: number[];
-declare const TrackFaces: number[];
-
-declare const ShipVertices: number[];
-declare const ShipNormals: number[];
-declare const ShipUvs: number[];
-declare const ShipFaces: number[];
-
-declare const Scrapers1Vertices: number[];
-declare const Scrapers1Normals: number[];
-declare const Scrapers1Uvs: number[];
-declare const Scrapers1Faces: number[];
-
-declare const Scrapers2Vertices: number[];
-declare const Scrapers2Normals: number[];
-declare const Scrapers2Uvs: number[];
-declare const Scrapers2Faces: number[];
-
-const iblSuffix = Filament.getSupportedFormatSuffix("etc s3tc");
-const environ = "env/syferfontein_18d_clear_2k";
-const iblUrl = `${environ}_ibl${iblSuffix}.ktx.bmp`;
-const skySmallUrl = `${environ}_skybox_tiny.ktx.bmp`;
-const skyLargeUrl = `${environ}_skybox.ktx.bmp`;
-
-const tracksMaterialUrl = "materials/tracks.filamat";
-
-const tracksDiffuseUrl = "tracks/diffuse.png";
-const tracksSpecularUrl = "tracks/specular.png";
-const tracksNormalUrl = "tracks/normal.png";
-
-const shipDiffuseUrl = "ship/diffuse.png";
-const shipSpecularUrl = "ship/specular.png";
-const shipNormalUrl = "ship/normal.png";
-
-const scrapers1DiffuseUrl = "scrapers1/diffuse.png";
-const scrapers1SpecularUrl = "scrapers1/specular.png";
-const scrapers1NormalUrl = "scrapers1/normal.png";
-
-const scrapers2DiffuseUrl = "scrapers2/diffuse.png";
-const scrapers2SpecularUrl = "scrapers2/specular.png";
-const scrapers2NormalUrl = "scrapers2/normal.png";
-
 const shippos = [-1134 * 2, 400, -443 * 2];
 const camheight = 100;
 
-Filament.init([skySmallUrl, iblUrl, tracksMaterialUrl ], () => {
-    // tslint:disable-next-line:no-string-literal
+Filament.init([urls.skySmall, urls.ibl, urls.tracksMaterial ], () => {
     window["app"] = new App(document.getElementsByTagName("canvas")[0]);
 });
 
@@ -79,9 +36,9 @@ class App {
         });
         this.engine = Filament.Engine.create(canvas);
         this.scene = this.engine.createScene();
-        this.skybox = this.engine.createSkyFromKtx(skySmallUrl);
+        this.skybox = this.engine.createSkyFromKtx(urls.skySmall);
         this.scene.setSkybox(this.skybox);
-        this.indirectLight = this.engine.createIblFromKtx(iblUrl);
+        this.indirectLight = this.engine.createIblFromKtx(urls.ibl);
         this.indirectLight.setIntensity(100000);
         this.scene.setIndirectLight(this.indirectLight);
         this.swapChain = this.engine.createSwapChain();
@@ -95,22 +52,25 @@ class App {
             Filament.MinFilter.LINEAR_MIPMAP_LINEAR, Filament.MagFilter.LINEAR,
             Filament.WrapMode.REPEAT);
 
-        this.material = this.engine.createMaterial(tracksMaterialUrl);
+        this.material = this.engine.createMaterial(urls.tracksMaterial);
 
-        Filament.fetch([ skyLargeUrl, tracksDiffuseUrl, tracksSpecularUrl, tracksNormalUrl ],
-                this.onLoadedTracks.bind(this));
+        const tracks = [ urls.tracksDiffuse, urls.tracksSpecular, urls.tracksNormal ];
+        tracks.push(urls.skyLarge);
+        Filament.fetch(tracks, this.onLoadedTracks.bind(this));
 
-        Filament.fetch([ shipDiffuseUrl, shipSpecularUrl, shipNormalUrl ],
-                this.onLoadedShip.bind(this));
+        const ship = [ urls.shipDiffuse, urls.shipSpecular, urls.shipNormal ];
+        Filament.fetch(ship, this.onLoadedShip.bind(this));
 
-        Filament.fetch([ scrapers1DiffuseUrl, scrapers1SpecularUrl, scrapers1NormalUrl ], () => {
+        const scrapers1 = [ urls.scrapers1Diffuse, urls.scrapers1Specular, urls.scrapers1Normal ];
+        Filament.fetch(scrapers1, () => {
             const script = document.createElement("script");
             script.onload = this.onLoadedScrapers1.bind(this);
             script.src = "scrapers1/geometry.js";
             document.head.appendChild(script);
         });
 
-        Filament.fetch([ scrapers2DiffuseUrl, scrapers2SpecularUrl, scrapers2NormalUrl ], () => {
+        const scrapers2 = [ urls.scrapers2Diffuse, urls.scrapers2Specular, urls.scrapers2Normal ];
+        Filament.fetch(scrapers2, () => {
             const script = document.createElement("script");
             script.onload = this.onLoadedScrapers2.bind(this);
             script.src = "scrapers2/geometry.js";
@@ -134,53 +94,51 @@ class App {
 
     private onLoadedTracks() {
         const matinstance = this.material.createInstance();
-        const tracks = this.createRenderable(tracksDiffuseUrl, tracksSpecularUrl, tracksNormalUrl,
+        const tracks = this.createRenderable(
+            urls.tracksDiffuse, urls.tracksSpecular, urls.tracksNormal,
             TrackFaces, TrackVertices, [TrackUvs], TrackNormals, matinstance);
         this.scene.addEntity(tracks);
         this.engine.destroySkybox(this.skybox);
-        this.skybox = this.engine.createSkyFromKtx(skyLargeUrl);
+        this.skybox = this.engine.createSkyFromKtx(urls.skyLarge);
         this.scene.setSkybox(this.skybox);
     }
 
     private onLoadedShip() {
         const matinstance = this.material.createInstance();
-        const ship = this.createRenderable(shipDiffuseUrl, shipSpecularUrl, shipNormalUrl,
+        const ship = this.createRenderable(
+            urls.shipDiffuse, urls.shipSpecular, urls.shipNormal,
             ShipFaces, ShipVertices, [ShipUvs], ShipNormals, matinstance);
-
         const transform = mat4.fromTranslation(mat4.create(), shippos) as unknown;
         const tcm = this.engine.getTransformManager();
         const inst = tcm.getInstance(ship);
         tcm.setTransform(inst, transform as number[]);
         inst.delete();
-
         this.scene.addEntity(ship);
     }
 
     private onLoadedScrapers1() {
         const matinstance = this.material.createInstance();
-        const scrapers1 = this.createRenderable(scrapers1DiffuseUrl, scrapers1SpecularUrl, scrapers1NormalUrl,
+        const scrapers1 = this.createRenderable(
+            urls.scrapers1Diffuse, urls.scrapers1Specular, urls.scrapers1Normal,
             Scrapers1Faces, Scrapers1Vertices, [Scrapers1Uvs], Scrapers1Normals, matinstance);
-
         const transform = mat4.fromTranslation(mat4.create(), [0, 0, 0]) as unknown;
         const tcm = this.engine.getTransformManager();
         const inst = tcm.getInstance(scrapers1);
         tcm.setTransform(inst, transform as number[]);
         inst.delete();
-
         this.scene.addEntity(scrapers1);
     }
 
     private onLoadedScrapers2() {
         const matinstance = this.material.createInstance();
-        const scrapers2 = this.createRenderable(scrapers2DiffuseUrl, scrapers2SpecularUrl, scrapers2NormalUrl,
+        const scrapers2 = this.createRenderable(
+            urls.scrapers2Diffuse, urls.scrapers2Specular, urls.scrapers2Normal,
             Scrapers2Faces, Scrapers2Vertices, [Scrapers2Uvs], Scrapers2Normals, matinstance);
-
         const transform = mat4.fromTranslation(mat4.create(), [0, 0, 0]) as unknown;
         const tcm = this.engine.getTransformManager();
         const inst = tcm.getInstance(scrapers2);
         tcm.setTransform(inst, transform as number[]);
         inst.delete();
-
         this.scene.addEntity(scrapers2);
     }
 
@@ -195,7 +153,11 @@ class App {
         const dy = eye[1];
         const dz = eye[2];
 
-        const eye2 =    [ shippos[0] + camheight * dx, shippos[1] + camheight * dy,  shippos[2] + camheight * dz ];
+        const eye2 = [
+                shippos[0] + camheight * dx,
+                shippos[1] + camheight * dy,
+                shippos[2] + camheight * dz ];
+
         const center2 = [ shippos[0], shippos[1], shippos[2] ];
         const up2 =     [ 0,  0,  1 ];
 
@@ -316,3 +278,23 @@ function logFn(result: number) {
 const typedWorker: ITypedWorker<Values, number> = createWorker(workFn, logFn);
 
 typedWorker.postMessage({ x: 5, y: 5 });
+
+declare const TrackVertices: number[];
+declare const TrackNormals: number[];
+declare const TrackUvs: number[];
+declare const TrackFaces: number[];
+
+declare const ShipVertices: number[];
+declare const ShipNormals: number[];
+declare const ShipUvs: number[];
+declare const ShipFaces: number[];
+
+declare const Scrapers1Vertices: number[];
+declare const Scrapers1Normals: number[];
+declare const Scrapers1Uvs: number[];
+declare const Scrapers1Faces: number[];
+
+declare const Scrapers2Vertices: number[];
+declare const Scrapers2Normals: number[];
+declare const Scrapers2Uvs: number[];
+declare const Scrapers2Faces: number[];
