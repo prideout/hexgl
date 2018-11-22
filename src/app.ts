@@ -81,7 +81,7 @@ class App {
         this.scene.addEntity(sunlight);
         Filament.LightManager.Builder(Filament.LightManager$Type.SUN)
             .color([0.98, 0.92, 0.89])
-            .intensity(1100000.0)
+            .intensity(110000.0)
             .direction([0.5, -1, 0])
             .build(this.engine, sunlight);
 
@@ -210,19 +210,19 @@ class App {
 
         for (let i = 0; i < nverts; ++i) {
             const src = fp32normals.subarray(i * 3, i * 3 + 3) as vec3;
+            // const src = vec3.fromValues(0, 0, 1);
             const dst = ui16tangents.subarray(i * 4, i * 4 + 4) as vec4;
             const n = vec3.normalize(vec3.create(), src);
             const b = vec3.cross(vec3.create(), n, [0, 1, 0]);
             vec3.normalize(b, b);
             const t = vec3.cross(vec3.create(), b, n);
             const m3 = mat3.fromValues(t[0], t[1], t[2], b[0], b[1], b[2], n[0], n[1], n[2]);
-            const q = [0, 0, 0, 1]; // quat.fromMat3(quat.create(), m3);
+            const q = quat.fromMat3(quat.create(), m3);
             vec4_packSnorm16(dst, q);
             const v = fp32vertices.subarray(i * 3, i * 3 + 3) as vec3;
             vec3.max(maxp, maxp, v);
             vec3.min(minp, minp, v);
         }
-        console.info(nverts, minp, maxp);
 
         const vb = Filament.VertexBuffer.Builder()
             .vertexCount(nverts)

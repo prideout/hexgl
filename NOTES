@@ -1,15 +1,13 @@
-Fix normals
 Implement ChaseCamera
-Fix UV's on tracks ... without dereferencing the index buffer somehow?
 Implement keyboard controls
-Replace ship with hoverbike
-    http://xeogl.org/examples/#materials_specular_Hoverbike
 Faster, more progressive loading
-    Indexed geometry (implies reworking the texture atlases)
-    Backface culling
+    Indexed geometry -- this implies reworking the texture atlases and splitting along sharp edges
+        Can draco (or something similar) do this optimization for me?
     Replace geometry with binary files
     Replace PNG with KTX
     Use worker thread
+Replace ship with hoverbike
+    http://xeogl.org/examples/#materials_specular_Hoverbike
 Implement other game features
 contribute to DefinitelyTyped
 

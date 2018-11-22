@@ -3,7 +3,7 @@ export function processMesh(faces, verts, uvs, normals) {
     const zLength = faces.length;
     let i, j, fi, colorIndex, normalIndex, uvIndex, materialIndex, normal, hex,
             face, faceA, faceB, uvLayer, uv, u, v, offset = 0;
-    const faceVertexUvs = [], colors = [];
+    const faceVertexUvs = [], faceVertexNormals = [], colors = [];
 
     let nUvLayers = 0;
 
@@ -153,12 +153,9 @@ export function processMesh(faces, verts, uvs, normals) {
             if (hasFaceVertexNormal) {
                 for (i = 0; i < 3; i++) {
                     normalIndex = faces[offset++] * 3;
-                    normal = [
-                        normals[normalIndex++],
-                        normals[normalIndex++],
-                        normals[normalIndex],
-                   ];
-                    // face.vertexNormals.push(normal); // prideout
+                    faceVertexNormals.push(normals[normalIndex++]);
+                    faceVertexNormals.push(normals[normalIndex++]);
+                    faceVertexNormals.push(normals[normalIndex]);
                 }
             }
 
@@ -182,7 +179,6 @@ export function processMesh(faces, verts, uvs, normals) {
 
     const derefedTexcoords = [];
     const derefedVertices = [];
-    const derefedNormals = [];
 
     for (let f = 0, nfaces = tris.length / 3; f < nfaces; f++) {
         const thisface = faceVertexUvs[0][f];
@@ -191,14 +187,11 @@ export function processMesh(faces, verts, uvs, normals) {
             derefedVertices.push(verts[i0 * 3 + 0]);
             derefedVertices.push(verts[i0 * 3 + 1]);
             derefedVertices.push(verts[i0 * 3 + 2]);
-            derefedNormals.push(normals[i0 * 3 + 0]);
-            derefedNormals.push(normals[i0 * 3 + 1]);
-            derefedNormals.push(normals[i0 * 3 + 2]);
             const uv0 = thisface[side];
             derefedTexcoords.push(uv0[0]);
             derefedTexcoords.push(uv0[1]);
         }
     }
 
-    return [derefedVertices, derefedTexcoords, derefedNormals];
+    return [derefedVertices, derefedTexcoords, faceVertexNormals];
 }
