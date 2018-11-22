@@ -22,3 +22,6 @@ export const scrapers1Normal = "scrapers1/normal.png";
 export const scrapers2Diffuse = "scrapers2/diffuse.png";
 export const scrapers2Specular = "scrapers2/specular.png";
 export const scrapers2Normal = "scrapers2/normal.png";
+
+export const collision = "tracks/collision.png";
+export const elevation = "tracks/height.png";

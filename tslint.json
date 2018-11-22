@@ -12,7 +12,8 @@
         "no-internal-module": false,
         "no-namespace": false,
         "max-classes-per-file": false,
-        "no-string-literal": false
+        "no-string-literal": false,
+        "object-literal-shorthand": false,
     },
     "rulesDirectory": []
 }

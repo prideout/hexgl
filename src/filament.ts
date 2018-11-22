@@ -3,6 +3,8 @@ declare module Filament {
     function init(assets: string[], onready: () => void): void;
     function fetch(assets: string[], onready: () => void): void;
 
+    const assets: {[url: string]: Uint8Array};
+
     type Box = number[][];
     type float2 = number[];
     type float3 = number[];

@@ -1,4 +1,7 @@
-Implement ChaseCamera
+Create "Simulation" class that listens for up/down/left/right/a/z and simply translates ship
+ChaseCamera => ChaseManipulator
+ShipControls => Simulation
+
 Implement keyboard controls
 Faster, more progressive loading
     Indexed geometry -- this implies reworking the texture atlases and splitting along sharp edges

@@ -7,6 +7,9 @@ import { createWorker, ITypedWorker } from "typed-web-workers";
 import { vec4_packSnorm16 } from "./math";
 import { processMesh } from "./meshloader";
 
+import Sampler from "./sampler";
+import Simulation from "./simulation";
+
 const shippos = [-1134 * 2, 400, -443 * 2];
 const camheight = 100;
 
@@ -27,6 +30,7 @@ class App {
     private sampler: Filament.TextureSampler;
     private material: Filament.Material;
     private trackball: Trackball;
+    private simulation: Simulation;
 
     constructor(canvas) {
         this.canvas = canvas;
@@ -76,6 +80,17 @@ class App {
             script.src = "scrapers2/geometry.js";
             document.head.appendChild(script);
         });
+
+        (() => {
+            let k = 0;
+            const onload = () => {
+                if (++k === 2) {
+                    this.simulation = new Simulation(collision, elevation);
+                }
+            };
+            const collision = new Sampler(urls.collision, onload);
+            const elevation = new Sampler(urls.elevation, onload);
+        })();
 
         const sunlight = Filament.EntityManager.get().create();
         this.scene.addEntity(sunlight);
