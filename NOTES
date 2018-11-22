@@ -1,18 +1,48 @@
-Create "Simulation" class that listens for up/down/left/right/a/z and simply translates ship
-ChaseCamera => ChaseManipulator
-ShipControls => Simulation
+Flesh out "Simulation"
 
-Implement keyboard controls
+App => fork out "Display"
+
+ChaseCamera
+
+prideout/meshindexer
+
+    Its CMake has a WASM build that builds only the decoder of meshoptimizer
+
+    third_party (these are not submodules)
+        https://github.com/docopt/docopt.cpp
+        https://github.com/tcoppex/ext-mikktspace
+        https://github.com/zeux/meshoptimizer
+
+    README.md
+
+        curl -L -O https://github.com/aras-p/smol-v/archive/9a787d1.zip
+        unzip 9a787d1.zip
+        mv smol-v-* smol-v
+        cd smol-v
+        rm -rf tests projects testing
+        mv license.txt LICENSE
+
+    createObjectURL
+
 Faster, more progressive loading
-    Indexed geometry -- this implies reworking the texture atlases and splitting along sharp edges
-        Can draco (or something similar) do this optimization for me?
     Replace geometry with binary files
     Replace PNG with KTX
     Use worker thread
-Replace ship with hoverbike
+
+Implement game menu
+
+Replace ship with hoverbike?
     http://xeogl.org/examples/#materials_specular_Hoverbike
-Implement other game features
-contribute to DefinitelyTyped
+
+Contribute to DefinitelyTyped
+
+---
+
+// rotateAxis => transformDirection =>
+//      vec3.transformQuat / vec3.transformMat4 / vec3.transformMat3
+// rotateByAxis => mat4.fromRotation
+// compose    => mat4.fromRotationTranslation
+// decompose  => mat4.getRotation, mat4.getTranslation
 
 ---
 

@@ -10,13 +10,14 @@ import { processMesh } from "./meshloader";
 import Sampler from "./sampler";
 import Simulation from "./simulation";
 
-const shippos = [-1134 * 2, 400, -443 * 2];
+const shippos = vec3.fromValues(-1134 * 2, 400, -886);
 const camheight = 100;
 
 Filament.init([urls.skySmall, urls.ibl, urls.tracksMaterial ], () => {
     window["app"] = new App(document.getElementsByTagName("canvas")[0]);
 });
 
+// Manages the state machine of the application.
 class App {
     private canvas: HTMLCanvasElement;
     private engine: Filament.Engine;
@@ -31,6 +32,8 @@ class App {
     private material: Filament.Material;
     private trackball: Trackball;
     private simulation: Simulation;
+    private time: number;
+    private ship: Filament.Entity;
 
     constructor(canvas) {
         this.canvas = canvas;
@@ -62,8 +65,8 @@ class App {
         tracks.push(urls.skyLarge);
         Filament.fetch(tracks, this.onLoadedTracks.bind(this));
 
-        const ship = [ urls.shipDiffuse, urls.shipSpecular, urls.shipNormal ];
-        Filament.fetch(ship, this.onLoadedShip.bind(this));
+        const shipAssets = [ urls.shipDiffuse, urls.shipSpecular, urls.shipNormal ];
+        Filament.fetch(shipAssets, this.onLoadedShip.bind(this));
 
         const scrapers1 = [ urls.scrapers1Diffuse, urls.scrapers1Specular, urls.scrapers1Normal ];
         Filament.fetch(scrapers1, () => {
@@ -85,7 +88,8 @@ class App {
             let k = 0;
             const onload = () => {
                 if (++k === 2) {
-                    this.simulation = new Simulation(collision, elevation);
+                    this.simulation = new Simulation(this.canvas, collision, elevation);
+                    this.simulation.resetPosition(shippos);
                 }
             };
             const collision = new Sampler(urls.collision, onload);
@@ -120,15 +124,10 @@ class App {
 
     private onLoadedShip() {
         const matinstance = this.material.createInstance();
-        const ship = this.createRenderable(
+        this.ship = this.createRenderable(
             urls.shipDiffuse, urls.shipSpecular, urls.shipNormal,
             ShipFaces, ShipVertices, [ShipUvs], ShipNormals, matinstance);
-        const transform = mat4.fromTranslation(mat4.create(), shippos) as unknown;
-        const tcm = this.engine.getTransformManager();
-        const inst = tcm.getInstance(ship);
-        tcm.setTransform(inst, transform as number[]);
-        inst.delete();
-        this.scene.addEntity(ship);
+        this.scene.addEntity(this.ship);
     }
 
     private onLoadedScrapers1() {
@@ -178,10 +177,26 @@ class App {
 
         this.camera.lookAt(eye2, center2, up2);
 
-        // const tcm = this.engine.getTransformManager();
-        // const inst = tcm.getInstance(this.ship);
-        // tcm.setTransform(inst, this.trackball.getMatrix());
-        // inst.delete();
+        // Update the simulation.
+        const time = Date.now();
+        if (this.time === null) {
+            this.time = time;
+        }
+        const dt = (time - this.time) * 0.01;
+        this.time = time;
+        if (this.simulation) {
+            this.simulation.tick(dt);
+            const vehicleMatrix = this.simulation.getMatrix();
+            mat4.getTranslation(shippos, vehicleMatrix);
+        }
+
+        if (this.ship) {
+            const transform = mat4.fromTranslation(mat4.create(), shippos) as unknown;
+            const tcm = this.engine.getTransformManager();
+            const inst = tcm.getInstance(this.ship);
+            tcm.setTransform(inst, transform as number[]);
+            inst.delete();
+        }
 
         this.renderer.render(this.swapChain, this.view);
         window.requestAnimationFrame(this.render);
