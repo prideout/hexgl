@@ -90,7 +90,9 @@ export default class Display {
         this.resize();
     }
 
-    public render(shippos: vec3) {
+    public render(vehicleMatrix: mat4) {
+        const shippos = mat4.getTranslation(vec3.create(), vehicleMatrix);
+
         const eye = vec3.fromValues(0, 0, 1);
         const xform = this.trackball.getMatrix() as unknown as mat4;
         mat4.rotateX(xform, xform, -Math.PI * 0.5);
@@ -111,10 +113,9 @@ export default class Display {
         this.camera.lookAt(eye2, center2, up2);
 
         if (this.ship) {
-            const transform = mat4.fromTranslation(mat4.create(), shippos) as unknown;
             const tcm = this.engine.getTransformManager();
             const inst = tcm.getInstance(this.ship);
-            tcm.setTransform(inst, transform as number[]);
+            tcm.setTransform(inst, vehicleMatrix as unknown as number[]);
             inst.delete();
         }
 

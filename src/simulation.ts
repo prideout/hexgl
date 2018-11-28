@@ -238,11 +238,10 @@ export default class Simulation {
         mat4.getRotation(dummyquat, this.dummyMatrix);
         quat.multiply(dummyquat, dummyquat, this.quaternion);
 
-        const dummypos = vec3.create();
-        mat4.getTranslation(dummypos, this.dummyMatrix);
+        const dummypos = mat4.getTranslation(vec3.create(), this.dummyMatrix);
         mat4.fromRotationTranslation(this.dummyMatrix, dummyquat, dummypos);
 
-        // Finally, forumulate the final transformation matrix.
+        // Finally, formulate the final transformation matrix.
         const xform = this.vehicleMatrix;
         mat4.identity(xform);
 
@@ -274,7 +273,7 @@ export default class Simulation {
             mat4.rotate(xform, xform, this.roll, this.rollAxis);
         }
 
-        mat4.multiply(xform, xform, this.dummyMatrix);
+        mat4.multiply(xform, this.dummyMatrix, xform);
     }
 
     private onKeyDown(event) {

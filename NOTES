@@ -1,5 +1,5 @@
 Simulation
-    Left / Right should be rotating the ship
+    gravity
     collisions
     boosters
 
@@ -30,16 +30,17 @@ Faster, more progressive loading
     Replace PNG with KTX
     Use worker thread
 
+Filament Typescript annotation should allow glmatrix types, eg this is annoying:
+    tcm.setTransform(inst, vehicleMatrix as unknown as number[]);
+
 Implement game menu
 
 Fork me ribbon
 
+---
+
 Replace ship with hoverbike?
     http://xeogl.org/examples/#materials_specular_Hoverbike
-
-Contribute to DefinitelyTyped
-
----
 
 // rotateAxis => transformDirection =>
 //      vec3.transformQuat / vec3.transformMat4 / vec3.transformMat3

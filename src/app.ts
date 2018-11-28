@@ -7,7 +7,8 @@ import Display from "./display";
 import Sampler from "./sampler";
 import Simulation from "./simulation";
 
-const shippos = vec3.fromValues(-1134 * 2, 400, -886);
+const initialVehiclePosition = vec3.fromValues(-1134 * 2, 400, -886);
+const vehicleMatrix = mat4.create();
 
 Filament.init([urls.skySmall, urls.ibl, urls.tracksMaterial ], () => {
     window["app"] = new App();
@@ -27,7 +28,7 @@ class App {
             const onload = () => {
                 if (++k === 2) {
                     this.simulation = new Simulation(canvas, collision, elevation);
-                    this.simulation.resetPosition(shippos);
+                    this.simulation.resetPosition(initialVehiclePosition);
                 }
             };
             const collision = new Sampler(urls.collision, onload);
@@ -46,10 +47,9 @@ class App {
         this.time = time;
         if (this.simulation) {
             this.simulation.tick(dt);
-            const vehicleMatrix = this.simulation.getMatrix();
-            mat4.getTranslation(shippos, vehicleMatrix);
+            mat4.copy(vehicleMatrix, this.simulation.getMatrix());
         }
-        this.display.render(shippos);
+        this.display.render(vehicleMatrix);
         window.requestAnimationFrame(this.tick);
     }
 
