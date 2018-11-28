@@ -3,7 +3,7 @@ Simulation
     collisions
     boosters
 
-ChaseCamera
+ChaseCamera, Get rid of Trackball
 
 prideout/meshindexer
 
@@ -28,14 +28,21 @@ prideout/meshindexer
 Faster, more progressive loading
     Replace geometry with binary files
     Replace PNG with KTX
-    Use worker thread
+    Use bmp suffix on geo *and* on images to enable ZIP compression
+    Use workers, or remove them
+
+Audio
 
 Filament Typescript annotation should allow glmatrix types, eg this is annoying:
     tcm.setTransform(inst, vehicleMatrix as unknown as number[]);
 
 Implement game menu
 
-Fork me ribbon
+Fork me ribbon (already exists in gh-pages)
+
+get rid of math.ts?
+
+rm NOTES
 
 ---
 
