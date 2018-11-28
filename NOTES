@@ -1,6 +1,7 @@
-Flesh out "Simulation"
-
-App => fork out "Display"
+Simulation
+    Left / Right should be rotating the ship
+    collisions
+    boosters
 
 ChaseCamera
 
@@ -30,6 +31,8 @@ Faster, more progressive loading
     Use worker thread
 
 Implement game menu
+
+Fork me ribbon
 
 Replace ship with hoverbike?
     http://xeogl.org/examples/#materials_specular_Hoverbike

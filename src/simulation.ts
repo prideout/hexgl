@@ -4,13 +4,13 @@ import Sampler from "./sampler";
 
 import { mat3, mat4, quat, vec3, vec4 } from "gl-matrix";
 
-// Listens to input events and periodically updates a matrix representing the vehicle's position and
-// orientation. Looks at two images (collision / elevation) to glean information about the race
-// track. Public methods:
+// The Simulation listens to input events and periodically updates a matrix representing the
+// vehicle's position and orientation. Looks at two images (collision / elevation) to glean
+// information about the race track. Public methods:
 //
-//   - tick(dt: number)
 //   - getMatrix(): mat4
 //   - resetPosition(pos: vec3)
+//   - tick(dt: number)
 //
 export default class Simulation {
     private readonly vehicleMatrix: mat4;
@@ -132,13 +132,13 @@ export default class Simulation {
         };
     }
 
+    public getMatrix(): mat4 {
+        return this.vehicleMatrix;
+    }
+
     public resetPosition(pos: vec3) {
         mat4.fromTranslation(this.vehicleMatrix, pos);
         mat4.fromTranslation(this.dummyMatrix, pos);
-    }
-
-    public getMatrix(): mat4 {
-        return this.vehicleMatrix;
     }
 
     public tick(dt: number) {
@@ -166,7 +166,7 @@ export default class Simulation {
                 rollAmount += this.rollAngle;
             }
 
-            if (true || this.keyState.forward) {
+            if (this.keyState.forward) {
                 this.speed += thrust * dt;
             } else {
                 this.speed -= airResist * dt;
@@ -260,7 +260,7 @@ export default class Simulation {
         if (Math.abs(tiltDelta) > epsilon) {
             this.tilt += tiltDelta;
         }
-        if (Math.abs(this.gradient) > epsilon) {
+        if (Math.abs(this.tilt) > epsilon) {
             mat4.rotate(xform, xform, this.tilt, tiltAxis);
         }
 
@@ -269,7 +269,7 @@ export default class Simulation {
         if (Math.abs(rollDelta) > epsilon) {
             this.roll += rollDelta;
         }
-        if (Math.abs(this.gradient) > epsilon) {
+        if (Math.abs(this.roll) > epsilon) {
             vec3.copy(this.rollAxis, this.rollDirection);
             mat4.rotate(xform, xform, this.roll, this.rollAxis);
         }
