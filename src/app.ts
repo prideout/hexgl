@@ -14,7 +14,9 @@ Filament.init([urls.skySmall, urls.ibl, urls.tracksMaterial ], () => {
     window["app"] = new App();
 });
 
-// The App owns the Display and Simulation.
+// -------------------------------------------------------------------------------------------------
+// The App owns the Display and Simulation. The global instance can be used for debugging only.
+// -------------------------------------------------------------------------------------------------
 class App {
     private display: Display;
     private simulation: Simulation;

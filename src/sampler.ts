@@ -5,6 +5,13 @@ interface Color {
     a: number;
 }
 
+// -------------------------------------------------------------------------------------------------
+// Sampler allows clients to sample from an image using bilinear interpolation. Public methods:
+//   - getPixel(x: number, y: number): Color
+//   - getPixelBilinear(fx: number, fy: number): Color
+//   - getPixelF(x: number, y: number): Color
+//   - getPixelBilinearF(fx: number, fy: number): Color
+// -------------------------------------------------------------------------------------------------
 export default class Sampler {
     private image: HTMLImageElement;
     private pixels: ImageData;

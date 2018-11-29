@@ -1,3 +1,6 @@
+// -------------------------------------------------------------------------------------------------
+// Declares TypeScript annotations for Filament, which is implemented with an external WASM library.
+// -------------------------------------------------------------------------------------------------
 declare module Filament {
     function getSupportedFormatSuffix(desired: string): void;
     function init(assets: string[], onready: () => void): void;
@@ -440,9 +443,4 @@ declare module Filament {
         REPEAT,
         MIRRORED_REPEAT,
     }
-}
-
-declare class Trackball {
-    constructor(canvas: HTMLCanvasElement, options: object);
-    public getMatrix(): number[];
 }

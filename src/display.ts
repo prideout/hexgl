@@ -8,11 +8,15 @@ import { processMesh } from "./meshloader";
 
 const camheight = 100;
 
-// The Display draws to the main canvas and manages all Filament entities.
-// Public methods:
-//
-//   - render(shippos: vec3)
-//
+declare class Trackball {
+    constructor(canvas: HTMLCanvasElement, options: object);
+    public getMatrix(): number[];
+}
+
+// -------------------------------------------------------------------------------------------------
+// The Display draws to the main canvas and manages all Filament entities. Public methods:
+//   - render(vehicleMatrix: mat4)
+// -------------------------------------------------------------------------------------------------
 export default class Display {
     private canvas: HTMLCanvasElement;
     private engine: Filament.Engine;
