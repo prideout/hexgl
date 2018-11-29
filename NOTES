@@ -1,9 +1,8 @@
 Simulation
-    gravity
-    collisions
-    boosters
+    collisionCheck
+    boosterCheck
 
-ChaseCamera, Get rid of Trackball
+ChaseCamera, remove Trackball
 
 prideout/meshindexer
 

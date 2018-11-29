@@ -59,6 +59,7 @@ declare module Filament {
 
     class RenderableManager$Builder {
         public boundingBox(box: Box): RenderableManager$Builder;
+        public culling(enable: boolean): RenderableManager$Builder;
         public material(geo: number, minstance: MaterialInstance): RenderableManager$Builder;
         public geometry(slot: number,
                         ptype: RenderableManager$PrimitiveType,

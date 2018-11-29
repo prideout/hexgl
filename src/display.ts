@@ -205,7 +205,6 @@ export default class Display {
 
         for (let i = 0; i < nverts; ++i) {
             const src = fp32normals.subarray(i * 3, i * 3 + 3) as vec3;
-            // const src = vec3.fromValues(0, 0, 1);
             const dst = ui16tangents.subarray(i * 4, i * 4 + 4) as vec4;
             const n = vec3.normalize(vec3.create(), src);
             const b = vec3.cross(vec3.create(), n, [0, 1, 0]);
@@ -248,9 +247,10 @@ export default class Display {
         const renderable = Filament.EntityManager.get().create();
 
         Filament.RenderableManager.Builder(1)
-            .boundingBox([ [-1000, -1000, -1000], [1000, 1000, 1000] ])
+            .boundingBox([ minp as unknown as number[], maxp as unknown as number[] ])
             .material(0, matinstance)
             .geometry(0, PrimitiveType.TRIANGLES, vb, ib)
+            .culling(false) // TODO: why is culling working incorrectly?
             .build(this.engine, renderable);
 
         return renderable;

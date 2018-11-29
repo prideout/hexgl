@@ -95,13 +95,13 @@ export default class Simulation {
         this.shield = 1.0;
         this.angular = 0.0;
         this.quaternion = quat.create();
-        this.collisionPixelRatio = 1.0;
-        this.collisionDetection = false;
+        this.collisionPixelRatio = 2048.0 / 6000.0;;
+        this.collisionDetection = true;
         this.collisionPreviousPosition = vec3.create();
-        this.heightPixelRatio = 1.0;
-        this.heightBias = 0.0;
+        this.heightPixelRatio = 2048.0 / 6000.0;
+        this.heightBias = 4.0;
         this.heightLerp = 0.4;
-        this.heightScale = 1.0;
+        this.heightScale = 10.0;
         this.rollAngle = 0.6;
         this.rollLerp = 0.08;
         this.rollDirection = vec3.fromValues(0, 0, 1);
@@ -226,11 +226,11 @@ export default class Simulation {
 
         const txz = vec3.fromValues(this.movement[0], 0, this.movement[2]);
         mat4.translate(this.dummyMatrix, this.dummyMatrix, txz);
-        // this.heightCheck(dt);
+        this.heightCheck(dt);
 
         const ty = vec3.fromValues(0, this.movement[1], 0);
         mat4.translate(this.dummyMatrix, this.dummyMatrix, ty);
-        // this.collisionCheck(dt);
+        this.collisionCheck(dt);
 
         quat.set(this.quaternion, this.rotation[0], this.rotation[1], this.rotation[2], 1);
         quat.normalize(this.quaternion, this.quaternion);
@@ -301,6 +301,57 @@ export default class Simulation {
             case 65: /*A*/ key.ltrigger = false; break;
             case 68: /*D*/ key.rtrigger = false; break;
             case 69: /*E*/ key.rtrigger = false; break;
+        }
+    }
+
+    private collisionCheck(dt: number): void {
+    }
+
+    private heightCheck(dt: number): void {
+
+        const dummypos = mat4.getTranslation(vec3.create(), this.dummyMatrix);
+        const dummyquat = mat4.getRotation(quat.create(), this.dummyMatrix);
+
+        let x = this.elevation.width / 2 + dummypos[0] * this.heightPixelRatio;
+        let z = this.elevation.height / 2 + dummypos[2] * this.heightPixelRatio;
+        let height = this.elevation.getPixelFBilinear(x, z) / this.heightScale + this.heightBias;
+        if (height < 16777) {
+            var delta = (height - dummypos[1]);
+            if (delta > 0) {
+                this.movement[1] += delta;
+            } else {
+                this.movement[1] += delta * this.heightLerp;
+            }
+        }
+
+        // gradient
+        vec3.set(this.gradientVector, 0, 0, 5);
+        vec3.transformQuat(this.gradientVector, this.gradientVector, dummyquat);
+        vec3.add(this.gradientVector, this.gradientVector, dummypos);
+        x = this.elevation.width/2 + this.gradientVector[0] * this.heightPixelRatio;
+        z = this.elevation.height/2 + this.gradientVector[2] * this.heightPixelRatio;
+        let nheight = this.elevation.getPixelFBilinear(x, z) / this.heightScale + this.heightBias;
+        if(nheight < 16777) {
+            this.gradientTarget = -Math.atan2(nheight-height, 5.0) * this.gradientScale;
+        }
+
+        // tilt
+        vec3.set(this.tiltVector, 5, 0, 0);
+        vec3.transformQuat(this.tiltVector, this.tiltVector, dummyquat);
+        vec3.add(this.tiltVector, this.tiltVector, dummypos);
+        x = this.elevation.width/2 + this.tiltVector[0] * this.heightPixelRatio;
+        z = this.elevation.height/2 + this.tiltVector[2] * this.heightPixelRatio;
+        nheight = this.elevation.getPixelFBilinear(x, z) / this.heightScale + this.heightBias;
+        if (nheight >= 16777) {
+            vec3.subtract(this.tiltVector, this.tiltVector, dummypos);
+            vec3.scale(this.tiltVector, this.tiltVector, -1);
+            vec3.add(this.tiltVector, this.tiltVector, dummypos);
+            x = this.elevation.width/2 + this.tiltVector[0] * this.heightPixelRatio;
+            z = this.elevation.height/2 + this.tiltVector[2] * this.heightPixelRatio;
+            nheight = this.elevation.getPixelFBilinear(x, z) / this.heightScale + this.heightBias;
+        }
+        if (nheight < 16777) {
+            this.tiltTarget = Math.atan2(nheight-height, 5.0) * this.tiltScale;
         }
     }
 }

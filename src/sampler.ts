@@ -9,13 +9,13 @@ export default class Sampler {
     private image: HTMLImageElement;
     private pixels: ImageData;
     private canvas: HTMLCanvasElement;
-    private loaded: boolean;
+    public width: number;
+    public height: number;
 
     constructor(url: string, cb: () => void) {
         this.image = new Image();
         this.pixels = null;
         this.canvas = null;
-        this.loaded = false;
         this.image.onload = () => {
             const canvas = this.canvas = document.createElement("canvas");
             this.canvas.width = this.image.width;
@@ -23,7 +23,8 @@ export default class Sampler {
             const context = this.canvas.getContext("2d");
             context.drawImage(this.image, 0, 0);
             this.pixels = context.getImageData(0, 0, canvas.width, canvas.height);
-            this.loaded = true;
+            this.width = this.pixels.width;
+            this.height = this.pixels.height;
             this.canvas = null;
             this.image = null;
             cb();
