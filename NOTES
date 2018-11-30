@@ -1,6 +1,6 @@
 ChaseCamera, remove Trackball
 
-Simulation: Fix up heightCheck / collisionCheck
+Simulation: Fix distortion of ship etc
 
 Simulation: boosterCheck
 

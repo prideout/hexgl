@@ -111,17 +111,17 @@ export default class Simulation {
         this.gradient = 0.0;
         this.gradientTarget = 0.0;
         this.gradientLerp = 0.05;
-        this.gradientScale = 4.0;
+        this.gradientScale = 1; // 4.0;
         this.gradientVector = vec3.fromValues(0, 0, 5);
         this.tilt = 0.0;
         this.tiltTarget = 0.0;
         this.tiltLerp = 0.05;
-        this.tiltScale = 4.0;
+        this.tiltScale = 1; // 4.0;
         this.tiltVector = vec3.fromValues(5, 0, 0);
         this.repulsionVLeft = vec3.fromValues(1,0,0);
         this.repulsionVRight = vec3.fromValues(-1, 0, 0);
         this.repulsionVFront = vec3.fromValues(0, 0, 1);
-        this.repulsionVScale = 4.0;
+        this.repulsionVScale = 1; // 4.0;
         this.repulsionAmount = 0.0;
         this.repulsionForce = vec3.create();
 
@@ -375,7 +375,6 @@ export default class Simulation {
     }
 
     private heightCheck(dt: number): void {
-
         const dummypos = mat4.getTranslation(vec3.create(), this.dummyMatrix);
         const dummyquat = mat4.getRotation(quat.create(), this.dummyMatrix);
 
@@ -383,7 +382,7 @@ export default class Simulation {
         let z = this.elevation.height / 2 + dummypos[2] * this.heightPixelRatio;
         let height = this.elevation.getPixelFBilinear(x, z) / this.heightScale + this.heightBias;
         if (height < 16777) {
-            var delta = (height - dummypos[1]);
+            const delta = height - dummypos[1];
             if (delta > 0) {
                 this.movement[1] += delta;
             } else {
@@ -395,10 +394,10 @@ export default class Simulation {
         vec3.set(this.gradientVector, 0, 0, 5);
         vec3.transformQuat(this.gradientVector, this.gradientVector, dummyquat);
         vec3.add(this.gradientVector, this.gradientVector, dummypos);
-        x = this.elevation.width/2 + this.gradientVector[0] * this.heightPixelRatio;
-        z = this.elevation.height/2 + this.gradientVector[2] * this.heightPixelRatio;
+        x = this.elevation.width / 2 + this.gradientVector[0] * this.heightPixelRatio;
+        z = this.elevation.height / 2 + this.gradientVector[2] * this.heightPixelRatio;
         let nheight = this.elevation.getPixelFBilinear(x, z) / this.heightScale + this.heightBias;
-        if(nheight < 16777) {
+        if (nheight < 16777) {
             this.gradientTarget = -Math.atan2(nheight-height, 5.0) * this.gradientScale;
         }
 
@@ -406,15 +405,15 @@ export default class Simulation {
         vec3.set(this.tiltVector, 5, 0, 0);
         vec3.transformQuat(this.tiltVector, this.tiltVector, dummyquat);
         vec3.add(this.tiltVector, this.tiltVector, dummypos);
-        x = this.elevation.width/2 + this.tiltVector[0] * this.heightPixelRatio;
-        z = this.elevation.height/2 + this.tiltVector[2] * this.heightPixelRatio;
+        x = this.elevation.width / 2 + this.tiltVector[0] * this.heightPixelRatio;
+        z = this.elevation.height / 2 + this.tiltVector[2] * this.heightPixelRatio;
         nheight = this.elevation.getPixelFBilinear(x, z) / this.heightScale + this.heightBias;
         if (nheight >= 16777) {
             vec3.subtract(this.tiltVector, this.tiltVector, dummypos);
             vec3.scale(this.tiltVector, this.tiltVector, -1);
             vec3.add(this.tiltVector, this.tiltVector, dummypos);
-            x = this.elevation.width/2 + this.tiltVector[0] * this.heightPixelRatio;
-            z = this.elevation.height/2 + this.tiltVector[2] * this.heightPixelRatio;
+            x = this.elevation.width / 2 + this.tiltVector[0] * this.heightPixelRatio;
+            z = this.elevation.height / 2 + this.tiltVector[2] * this.heightPixelRatio;
             nheight = this.elevation.getPixelFBilinear(x, z) / this.heightScale + this.heightBias;
         }
         if (nheight < 16777) {
