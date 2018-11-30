@@ -1,28 +1,32 @@
-Simulation
-    collisionCheck
-    boosterCheck
-
 ChaseCamera, remove Trackball
 
-prideout/meshindexer
+Simulation: Fix up heightCheck / collisionCheck
 
-    Its CMake has a WASM build that builds only the decoder of meshoptimizer
+Simulation: boosterCheck
 
-    third_party (these are not submodules)
-        https://github.com/docopt/docopt.cpp
-        https://github.com/tcoppex/ext-mikktspace
-        https://github.com/zeux/meshoptimizer
+Download three files for each mesh via "createObjectURL"
 
-    README.md
+Tools Branch
 
-        curl -L -O https://github.com/aras-p/smol-v/archive/9a787d1.zip
-        unzip 9a787d1.zip
-        mv smol-v-* smol-v
-        cd smol-v
-        rm -rf tests projects testing
-        mv license.txt LICENSE
+    ./meshindexer
+    ./third_party
 
-    createObjectURL
+    git clone https://github.com/prideout/lightracer lightracer_tools
+    cd lightracer_tools ; git checkout --orphan tools
+    git rm -rf .
+
+    For inspiration: https://github.com/prideout/clumpy
+
+    This tool consumes binary files for positions, texture coordinates, and normals. It generates
+    tangents and an index buffer, producing a single filamesh file.
+
+    Usage: [vertices_path] [texcoords_path] [normals_path] [output_path]
+
+    reports on welding results
+
+        filamesh      main.cpp (for reference only)
+        mikktspace    https://github.com/tcoppex/ext-mikktspace
+        meshoptimizer https://github.com/zeux/meshoptimizer (do not use encoder)
 
 Faster, more progressive loading
     Replace geometry with binary files
@@ -32,14 +36,18 @@ Faster, more progressive loading
 
 Audio
 
-Filament Typescript annotation should allow glmatrix types, eg this is annoying:
-    tcm.setTransform(inst, vehicleMatrix as unknown as number[]);
-
 Implement game menu
 
 Fork me ribbon (already exists in gh-pages)
 
 get rid of math.ts?
+
+fix culling issue
+
+simplify Simulation
+
+Filament Typescript annotation should allow glmatrix types, eg this is annoying:
+    tcm.setTransform(inst, vehicleMatrix as unknown as number[]);
 
 rm NOTES
 

@@ -40,6 +40,7 @@ export default class Simulation {
     private heightBias: number;
     private heightLerp: number;
     private heightScale: number;
+    private shieldDelay: number;
 
     private readonly rollAngle: number;
     private readonly rollLerp: number;
@@ -89,6 +90,7 @@ export default class Simulation {
         this.roll = 0.0;
         this.rollAxis = vec3.create();
         this.drift = 0.0;
+        this.shieldDelay = 60;
         this.speed = 0.0;
         this.speedRatio = 0.0;
         this.boost = 0.0;
@@ -305,6 +307,70 @@ export default class Simulation {
     }
 
     private collisionCheck(dt: number): void {
+        if (this.shieldDelay > 0) {
+            this.shieldDelay -= dt;
+        }
+        this.collisionState.left = false;
+        this.collisionState.right = false;
+        this.collisionState.front = false;
+
+        const dummypos = mat4.getTranslation(vec3.create(), this.dummyMatrix);
+        const dummyquat = mat4.getRotation(quat.create(), this.dummyMatrix);
+
+        let x = this.collision.width / 2 + dummypos[0] * this.collisionPixelRatio;
+        let z = this.collision.height / 2 + dummypos[2] * this.collisionPixelRatio;
+        let pos = vec3.fromValues(x, 0, z);
+
+        const collision = this.collision.getPixelBilinear(x, z);
+        if (collision.r < 255) {
+
+            // shield
+            var sr = (this.getRealSpeed() / maxSpeed);
+            this.shield -= sr * sr * 0.8 * shieldDamage;
+
+            // repulsion
+            vec3.set(this.repulsionVLeft, 1, 0, 0);
+            vec3.set(this.repulsionVRight, -1, 0, 0);
+            vec3.transformQuat(this.repulsionVLeft, this.repulsionVLeft, dummyquat);
+            vec3.transformQuat(this.repulsionVRight, this.repulsionVRight, dummyquat);
+            vec3.scale(this.repulsionVLeft, this.repulsionVLeft, this.repulsionVScale);
+            vec3.scale(this.repulsionVRight, this.repulsionVRight, this.repulsionVScale);
+
+            const lPos = vec3.add(this.repulsionVLeft, this.repulsionVLeft, pos);
+            const rPos = vec3.add(this.repulsionVRight, this.repulsionVRight, pos);
+            const lCol = this.collision.getPixel(Math.round(lPos[0]), Math.round(lPos[2])).r;
+            const rCol = this.collision.getPixel(Math.round(rPos[0]), Math.round(rPos[2])).r;
+
+            this.repulsionAmount = Math.max(0.8, Math.min(repulsionCap, this.speed * repulsionRatio));
+            if (rCol > lCol) {
+                this.repulsionForce[0] += -this.repulsionAmount;
+                this.collisionState.left = true;
+            } else if (rCol > lCol) {
+                this.repulsionForce[0] += this.repulsionAmount;
+                this.collisionState.right = true;
+            } else {
+                this.repulsionForce[2] += -this.repulsionAmount * 4;
+                this.collisionState.front = true;
+                this.speed = 0;
+            }
+
+            // game over
+            if (rCol < 128 && lCol < 128) {
+                var fCol = this.collision.getPixel(Math.round(pos[0]+2), Math.round(pos[2]+2)).r;
+                if(fCol < 128) {
+                    console.log('GAMEOVER');
+                    // this.fall();
+                }
+            }
+
+            this.speed *= collisionSpeedDecrease;
+            this.speed *= (1 - collisionSpeedDecreaseCoef * (1 - collision.r/255));
+            this.boost = 0;
+        }
+    }
+
+    private getRealSpeed(): number {
+        return Math.round(this.speed+this.boost);
     }
 
     private heightCheck(dt: number): void {
@@ -390,7 +456,6 @@ const repulsionLerp = 0.1;
 const collisionSpeedDecrease = 0.8;
 const collisionSpeedDecreaseCoef = 0.8;
 const maxShield = 1.0;
-const shieldDelay = 60;
 const shieldTiming = 0;
 const shieldDamage = 0.25;
 const driftLerp = 0.35;
