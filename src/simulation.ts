@@ -7,13 +7,13 @@ import { mat3, mat4, quat, vec3, vec4 } from "gl-matrix";
 // -------------------------------------------------------------------------------------------------
 // The Simulation listens to input events and periodically updates a matrix representing the
 // vehicle's position and orientation. Looks at two images (collision / elevation) to glean
-// information about the race track. Public methods:
-//   - getMatrix(): mat4
+// information about the race track.
+//   - constructor(canvas: HTMLCanvasElement, collision: Sampler, elevation: Sampler)
+//   - readonly vehicleMatrix: mat4;
 //   - resetPosition(pos: vec3)
 //   - tick(dt: number)
 // -------------------------------------------------------------------------------------------------
 export default class Simulation {
-    private readonly vehicleMatrix: mat4;
     private readonly dummyMatrix: mat4;
     private readonly collision: Sampler;
     private readonly elevation: Sampler;
@@ -21,7 +21,6 @@ export default class Simulation {
     private active: boolean;
     private destroyed: boolean;
     private falling: boolean;
-
     private movement: vec3;
     private rotation: vec3;
     private roll: number;
@@ -65,7 +64,9 @@ export default class Simulation {
     private fallVector: vec3;
     private collisionState: CollisionState
 
-    constructor(canvas: HTMLElement, collision: Sampler, elevation: Sampler) {
+    public readonly vehicleMatrix: mat4;
+
+    constructor(canvas: HTMLCanvasElement, collision: Sampler, elevation: Sampler) {
         this.vehicleMatrix = mat4.create();
         this.dummyMatrix = mat4.create();
         this.collision = collision;

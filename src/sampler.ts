@@ -6,7 +6,8 @@ interface Color {
 }
 
 // -------------------------------------------------------------------------------------------------
-// Sampler allows clients to sample from an image using bilinear interpolation. Public methods:
+// Sampler allows clients to sample from an image using bilinear interpolation.
+//   - constructor(url: string, cb: () => void)
 //   - getPixel(x: number, y: number): Color
 //   - getPixelBilinear(fx: number, fy: number): Color
 //   - getPixelF(x: number, y: number): Color

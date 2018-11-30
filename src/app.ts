@@ -3,6 +3,7 @@ import * as urls from "./urls";
 import { createWorker, ITypedWorker } from "typed-web-workers";
 import { mat4, vec3 } from "gl-matrix";
 
+import ChaseCamera from "./chasecam";
 import Display from "./display";
 import Sampler from "./sampler";
 import Simulation from "./simulation";
@@ -18,13 +19,15 @@ Filament.init([urls.skySmall, urls.ibl, urls.tracksMaterial ], () => {
 // The App owns the Display and Simulation. The global instance can be used for debugging only.
 // -------------------------------------------------------------------------------------------------
 class App {
-    private display: Display;
+    private readonly display: Display;
+    private readonly chasecam: ChaseCamera;
     private simulation: Simulation;
     private time: number;
 
     constructor() {
         const canvas = document.getElementsByTagName("canvas")[0];
         this.display = new Display(canvas);
+        this.chasecam = new ChaseCamera(this.display.camera, vehicleMatrix);
         (() => {
             let k = 0;
             const onload = () => {
@@ -49,7 +52,8 @@ class App {
         this.time = time;
         if (this.simulation) {
             this.simulation.tick(dt);
-            mat4.copy(vehicleMatrix, this.simulation.getMatrix());
+            mat4.copy(vehicleMatrix, this.simulation.vehicleMatrix);
+            this.chasecam.tick(dt);
         }
         this.display.render(vehicleMatrix);
         window.requestAnimationFrame(this.tick);

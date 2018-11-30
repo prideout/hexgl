@@ -14,7 +14,9 @@ declare class Trackball {
 }
 
 // -------------------------------------------------------------------------------------------------
-// The Display draws to the main canvas and manages all Filament entities. Public methods:
+// The Display draws to the main canvas and manages all Filament entities.
+//   - constructor(canvas: HTMLCanvasElement)
+//   - readonly camera: Filament.Camera;
 //   - render(vehicleMatrix: mat4)
 // -------------------------------------------------------------------------------------------------
 export default class Display {
@@ -23,7 +25,6 @@ export default class Display {
     private scene: Filament.Scene;
     private skybox: Filament.Skybox;
     private indirectLight: Filament.IndirectLight;
-    private camera: Filament.Camera;
     private view: Filament.View;
     private swapChain: Filament.SwapChain;
     private renderer: Filament.Renderer;
@@ -31,6 +32,8 @@ export default class Display {
     private material: Filament.Material;
     private trackball: Trackball;
     private ship: Filament.Entity;
+
+    public readonly camera: Filament.Camera;
 
     constructor(canvas) {
         this.canvas = canvas;
