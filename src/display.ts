@@ -25,6 +25,8 @@ declare class Trackball {
 }
 
 export default class Display {
+
+    public readonly camera: Filament.Camera;
     private canvas: HTMLCanvasElement;
     private engine: Filament.Engine;
     private scene: Filament.Scene;
@@ -37,8 +39,6 @@ export default class Display {
     private material: Filament.Material;
     private trackball: Trackball;
     private ship: Filament.Entity;
-
-    public readonly camera: Filament.Camera;
 
     constructor(canvas) {
         this.canvas = canvas;
@@ -66,14 +66,15 @@ export default class Display {
 
         this.material = this.engine.createMaterial(urls.tracksMaterial);
 
-        const tracks = [ urls.tracksDiffuse, urls.tracksSpecular, urls.tracksNormal ];
+        const textures = [urls.diffuse, urls.specular, urls.normal];
+        const tracks = textures.map((tex) => "tracks/" + tex);
         tracks.push(urls.skyLarge);
         Filament.fetch(tracks, this.onLoadedTracks.bind(this));
 
-        const shipAssets = [ urls.shipDiffuse, urls.shipSpecular, urls.shipNormal ];
+        const shipAssets = textures.map((tex) => "ship/" + tex);
         Filament.fetch(shipAssets, this.onLoadedShip.bind(this));
 
-        const scrapers1 = [ urls.scrapers1Diffuse, urls.scrapers1Specular, urls.scrapers1Normal ];
+        const scrapers1 = textures.map((tex) => "scrapers1/" + tex);
         Filament.fetch(scrapers1, () => {
             const script = document.createElement("script");
             script.onload = this.onLoadedScrapers1.bind(this);
@@ -81,7 +82,7 @@ export default class Display {
             document.head.appendChild(script);
         });
 
-        const scrapers2 = [ urls.scrapers2Diffuse, urls.scrapers2Specular, urls.scrapers2Normal ];
+        const scrapers2 = textures.map((tex) => "scrapers2/" + tex);
         Filament.fetch(scrapers2, () => {
             const script = document.createElement("script");
             script.onload = this.onLoadedScrapers2.bind(this);
@@ -136,9 +137,8 @@ export default class Display {
 
     private onLoadedTracks() {
         const matinstance = this.material.createInstance();
-        const tracks = this.createRenderable(
-            urls.tracksDiffuse, urls.tracksSpecular, urls.tracksNormal,
-            TrackFaces, TrackVertices, [TrackUvs], TrackNormals, matinstance);
+        const tracks = this.createRenderable("tracks", TrackFaces, TrackVertices, [TrackUvs],
+                TrackNormals, matinstance);
         this.scene.addEntity(tracks);
         this.engine.destroySkybox(this.skybox);
         this.skybox = this.engine.createSkyFromKtx(urls.skyLarge);
@@ -147,17 +147,15 @@ export default class Display {
 
     private onLoadedShip() {
         const matinstance = this.material.createInstance();
-        this.ship = this.createRenderable(
-            urls.shipDiffuse, urls.shipSpecular, urls.shipNormal,
-            ShipFaces, ShipVertices, [ShipUvs], ShipNormals, matinstance);
+        this.ship = this.createRenderable("ship", ShipFaces, ShipVertices, [ShipUvs], ShipNormals,
+                matinstance);
         this.scene.addEntity(this.ship);
     }
 
     private onLoadedScrapers1() {
         const matinstance = this.material.createInstance();
-        const scrapers1 = this.createRenderable(
-            urls.scrapers1Diffuse, urls.scrapers1Specular, urls.scrapers1Normal,
-            Scrapers1Faces, Scrapers1Vertices, [Scrapers1Uvs], Scrapers1Normals, matinstance);
+        const scrapers1 = this.createRenderable("scrapers1", Scrapers1Faces, Scrapers1Vertices,
+                [Scrapers1Uvs], Scrapers1Normals, matinstance);
         const transform = mat4.fromTranslation(mat4.create(), [0, 0, 0]) as unknown;
         const tcm = this.engine.getTransformManager();
         const inst = tcm.getInstance(scrapers1);
@@ -168,9 +166,8 @@ export default class Display {
 
     private onLoadedScrapers2() {
         const matinstance = this.material.createInstance();
-        const scrapers2 = this.createRenderable(
-            urls.scrapers2Diffuse, urls.scrapers2Specular, urls.scrapers2Normal,
-            Scrapers2Faces, Scrapers2Vertices, [Scrapers2Uvs], Scrapers2Normals, matinstance);
+        const scrapers2 = this.createRenderable("scrapers2", Scrapers2Faces, Scrapers2Vertices,
+                [Scrapers2Uvs], Scrapers2Normals, matinstance);
         const transform = mat4.fromTranslation(mat4.create(), [0, 0, 0]) as unknown;
         const tcm = this.engine.getTransformManager();
         const inst = tcm.getInstance(scrapers2);
@@ -191,7 +188,11 @@ export default class Display {
         this.camera.setProjectionFov(45, aspect, 1.0, 20000.0, fov);
     }
 
-    private createRenderable(diffuseUrl, specularUrl, normalUrl, faces, vertices, uvs, normals, matinstance) {
+    private createRenderable(name, faces, vertices, uvs, normals, matinstance) {
+        const diffuseUrl = `${name}/${urls.diffuse}`;
+        const specularUrl = `${name}/${urls.specular}`;
+        const normalUrl = `${name}/${urls.normal}`;
+
         const VertexAttribute = Filament.VertexAttribute;
         const AttributeType = Filament.VertexBuffer$AttributeType;
         const IndexType = Filament.IndexBuffer$IndexType;
@@ -255,6 +256,35 @@ export default class Display {
             .build(this.engine);
 
         ib.setBuffer(this.engine, dummy);
+
+        const anchor = document.getElementById(name);
+
+        // Create OBJ file.
+        if (anchor) {
+
+            let objcontent = `# ${name}: ${fp32vertices.length / 3} vertices\n`;
+            for (let i = 0; i < fp32vertices.length / 3; i++) {
+                const [vi, ti] = [i * 3, i * 2];
+                const pos = [fp32vertices[vi], fp32vertices[vi + 1], fp32vertices[vi + 2]];
+                const nrm = [fp32normals[vi], fp32normals[vi + 1], fp32normals[vi + 2]];
+                const uv0 = [fp32texcoords[ti], fp32texcoords[ti + 1]];
+                objcontent += `v ${pos[0]} ${pos[1]} ${pos[2]}\n`;
+                objcontent += `vt ${uv0[0]} ${uv0[1]}\n`;
+                objcontent += `vn ${nrm[0]} ${nrm[1]} ${nrm[2]}\n`;
+            }
+            for (let t = 0, i = 1, j = 2, k = 3; t < ntriangles; t++, i += 3, j += 3, k += 3) {
+                objcontent += `f ${i}/${i}/${i} ${j}/${j}/${j} ${k}/${k}/${k}\n`;
+            }
+
+            const blob = new Blob([objcontent], {
+                type: "text/plain;charset=utf-8",
+            });
+            const url = window.URL.createObjectURL(blob);
+            anchor["download"] = name + ".obj";
+            anchor.setAttribute("href", url);
+            anchor.click();
+            window.URL.revokeObjectURL(url);
+        }
 
         const renderable = Filament.EntityManager.get().create();
 

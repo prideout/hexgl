@@ -1,5 +1,5 @@
 // -------------------------------------------------------------------------------------------------
-// The App owns the Display and Simulation. The global instance can be used for debugging only.
+// The App owns the Display and Simulation.
 //
 // HexGL by Thibaut 'BKcore' Despoulain <http://bkcore.com>
 // Rewritten by Philip Rideout <https://prideout.net>
@@ -19,6 +19,7 @@ const initialVehiclePosition = vec3.fromValues(-1134 * 2, 400, -886);
 const vehicleMatrix = mat4.create();
 
 Filament.init([urls.skySmall, urls.ibl, urls.tracksMaterial ], () => {
+    // The global app instance can be accessed for debugging purposes only.
     window["app"] = new App();
 });
 
@@ -62,7 +63,6 @@ class App {
         this.display.render(vehicleMatrix);
         window.requestAnimationFrame(this.tick);
     }
-
 }
 
 interface Values {
@@ -81,23 +81,3 @@ function logFn(result: number) {
 const typedWorker: ITypedWorker<Values, number> = createWorker(workFn, logFn);
 
 typedWorker.postMessage({ x: 5, y: 5 });
-
-declare const TrackVertices: number[];
-declare const TrackNormals: number[];
-declare const TrackUvs: number[];
-declare const TrackFaces: number[];
-
-declare const ShipVertices: number[];
-declare const ShipNormals: number[];
-declare const ShipUvs: number[];
-declare const ShipFaces: number[];
-
-declare const Scrapers1Vertices: number[];
-declare const Scrapers1Normals: number[];
-declare const Scrapers1Uvs: number[];
-declare const Scrapers1Faces: number[];
-
-declare const Scrapers2Vertices: number[];
-declare const Scrapers2Normals: number[];
-declare const Scrapers2Uvs: number[];
-declare const Scrapers2Faces: number[];
