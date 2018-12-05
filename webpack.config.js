@@ -6,7 +6,7 @@ module.exports = {
     devtool: 'source-map',
     entry: './src/app.ts',
     output:  {
-        path: path.resolve(__dirname, '../lightrace_pages')
+        path: path.resolve(__dirname, '../hexgl_public')
     },
     module: {
         rules: [

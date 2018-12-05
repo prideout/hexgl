@@ -1,3 +1,14 @@
+// -------------------------------------------------------------------------------------------------
+// The Display draws to the main canvas and manages all Filament entities.
+//
+//   - constructor(canvas: HTMLCanvasElement)
+//   - readonly camera: Filament.Camera;
+//   - render(vehicleMatrix: mat4)
+//
+// HexGL by Thibaut 'BKcore' Despoulain <http://bkcore.com>
+// Rewritten by Philip Rideout <https://prideout.net>
+// -------------------------------------------------------------------------------------------------
+
 import "./filament";
 
 import * as urls from "./urls";
@@ -13,12 +24,6 @@ declare class Trackball {
     public getMatrix(): number[];
 }
 
-// -------------------------------------------------------------------------------------------------
-// The Display draws to the main canvas and manages all Filament entities.
-//   - constructor(canvas: HTMLCanvasElement)
-//   - readonly camera: Filament.Camera;
-//   - render(vehicleMatrix: mat4)
-// -------------------------------------------------------------------------------------------------
 export default class Display {
     private canvas: HTMLCanvasElement;
     private engine: Filament.Engine;

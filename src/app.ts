@@ -1,3 +1,10 @@
+// -------------------------------------------------------------------------------------------------
+// The App owns the Display and Simulation. The global instance can be used for debugging only.
+//
+// HexGL by Thibaut 'BKcore' Despoulain <http://bkcore.com>
+// Rewritten by Philip Rideout <https://prideout.net>
+// -------------------------------------------------------------------------------------------------
+
 import * as urls from "./urls";
 
 import { createWorker, ITypedWorker } from "typed-web-workers";
@@ -15,9 +22,6 @@ Filament.init([urls.skySmall, urls.ibl, urls.tracksMaterial ], () => {
     window["app"] = new App();
 });
 
-// -------------------------------------------------------------------------------------------------
-// The App owns the Display and Simulation. The global instance can be used for debugging only.
-// -------------------------------------------------------------------------------------------------
 class App {
     private readonly display: Display;
     private readonly chasecam: ChaseCamera;

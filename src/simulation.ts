@@ -1,18 +1,21 @@
-// Based on HexGL by Thibaut 'BKcore' Despoulain <http://bkcore.com>
+// -------------------------------------------------------------------------------------------------
+// The Simulation listens to input events and periodically updates a matrix representing the
+// vehicle's position and orientation. Looks at two images (collision / elevation) to glean
+// information about the race track.
+//
+//   - constructor(canvas: HTMLCanvasElement, collision: Sampler, elevation: Sampler)
+//   - readonly vehicleMatrix: mat4;
+//   - resetPosition(pos: vec3)
+//   - tick(dt: number)
+//
+// HexGL by Thibaut 'BKcore' Despoulain <http://bkcore.com>
+// Rewritten by Philip Rideout <https://prideout.net>
+// -------------------------------------------------------------------------------------------------
 
 import Sampler from "./sampler";
 
 import { mat3, mat4, quat, vec3, vec4 } from "gl-matrix";
 
-// -------------------------------------------------------------------------------------------------
-// The Simulation listens to input events and periodically updates a matrix representing the
-// vehicle's position and orientation. Looks at two images (collision / elevation) to glean
-// information about the race track.
-//   - constructor(canvas: HTMLCanvasElement, collision: Sampler, elevation: Sampler)
-//   - readonly vehicleMatrix: mat4;
-//   - resetPosition(pos: vec3)
-//   - tick(dt: number)
-// -------------------------------------------------------------------------------------------------
 export default class Simulation {
     private readonly dummyMatrix: mat4;
     private readonly collision: Sampler;

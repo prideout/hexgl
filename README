@@ -1,13 +1,13 @@
-This is a clone of Thibaut Despoulain's wonderful HexGL game, rewritten from scratch using
-TypeScript and Filament. I tilt my hat to Thibaut and everyone who contributed to his project.
+This is a rewrite of Thibaut Despoulain's HexGL game using TypeScript and Filament.
+I tilt my hat to Thibaut and everyone who contributed to his project.
 🎩🏎
 
 To build the web app, clone the repo twice: once for master and once for gh-pages.
 
-    git clone https://github.com/prideout/lightrace.git lightrace
-    git clone -b gh-pages https://github.com/prideout/lightrace.git lightrace_pages
-    cd lightrace
+    git clone https://github.com/prideout/hexgl.git hexgl_source
+    git clone -b gh-pages https://github.com/prideout/hexgl.git hexgl_public
+    cd hexgl_source
     yarn install
     yarn build
-    cd ../lightrace_pages
+    cd ../hexgl_public
     npx http-server
