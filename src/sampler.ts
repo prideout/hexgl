@@ -19,11 +19,11 @@ interface Color {
 }
 
 export default class Sampler {
+    public width: number;
+    public height: number;
     private image: HTMLImageElement;
     private pixels: ImageData;
     private canvas: HTMLCanvasElement;
-    public width: number;
-    public height: number;
 
     constructor(url: string, cb: () => void) {
         this.image = new Image();
@@ -72,22 +72,22 @@ export default class Sampler {
         const cy = this.getPixel(x, y + dy);
         const cxy = this.getPixel(x + dx, y + dy);
         const cf1 = [
-            (1-ax) * c.r + ax * cx.r,
-            (1-ax) * c.g + ax * cx.g,
-            (1-ax) * c.b + ax * cx.b,
-            (1-ax) * c.a + ax * cx.a,
+            (1 - ax) * c.r + ax * cx.r,
+            (1 - ax) * c.g + ax * cx.g,
+            (1 - ax) * c.b + ax * cx.b,
+            (1 - ax) * c.a + ax * cx.a,
         ];
         const cf2 = [
-            (1-ax) * cy.r + ax * cxy.r,
-            (1-ax) * cy.g + ax * cxy.g,
-            (1-ax) * cy.b + ax * cxy.b,
-            (1-ax) * cy.a + ax * cxy.a,
+            (1 - ax) * cy.r + ax * cxy.r,
+            (1 - ax) * cy.g + ax * cxy.g,
+            (1 - ax) * cy.b + ax * cxy.b,
+            (1 - ax) * cy.a + ax * cxy.a,
         ];
         return {
-            r: (1-ay) * cf1[0] + ay * cf2[0],
-            g: (1-ay) * cf1[1] + ay * cf2[1],
-            b: (1-ay) * cf1[2] + ay * cf2[2],
-            a: (1-ay) * cf1[3] + ay * cf2[3],
+            r: (1 - ay) * cf1[0] + ay * cf2[0],
+            g: (1 - ay) * cf1[1] + ay * cf2[1],
+            b: (1 - ay) * cf1[2] + ay * cf2[2],
+            a: (1 - ay) * cf1[3] + ay * cf2[3],
         };
     }
 

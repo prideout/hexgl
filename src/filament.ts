@@ -132,6 +132,12 @@ declare module Filament {
         public setTransform(instance: TransformManager$Instance, xform: mat4): void;
     }
 
+    interface Filamesh {
+        renderable: Entity;
+        vertexBuffer: VertexBuffer;
+        indexBuffer: IndexBuffer;
+    }
+
     class Engine {
         public static create(HTMLCanvasElement): Engine;
         public createCamera(): Camera;
@@ -147,6 +153,9 @@ declare module Filament {
         public getSupportedFormatSuffix(suffix: string): void;
         public getTransformManager(): TransformManager;
         public init(assets: string[], onready: () => void): void;
+        public loadFilamesh(url: string,
+                            definstance: MaterialInstance,
+                            matinstances: object): Filamesh;
     }
 
     enum Camera$Fov {

@@ -10,6 +10,7 @@ export const tracksMaterial = "materials/tracks.filamat";
 export const diffuse = "diffuse.png";
 export const specular = "specular.png";
 export const normal = "normal.png";
+export const mesh = "filamesh";
 
 export const collision = "tracks/collision.png";
 export const elevation = "tracks/height.png";

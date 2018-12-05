@@ -7,8 +7,8 @@
 
 import * as urls from "./urls";
 
-import { createWorker, ITypedWorker } from "typed-web-workers";
 import { mat4, vec3 } from "gl-matrix";
+import { createWorker, ITypedWorker } from "typed-web-workers";
 
 import ChaseCamera from "./chasecam";
 import Display from "./display";

@@ -17,6 +17,8 @@ import Sampler from "./sampler";
 import { mat3, mat4, quat, vec3, vec4 } from "gl-matrix";
 
 export default class Simulation {
+    public readonly vehicleMatrix: mat4;
+
     private readonly dummyMatrix: mat4;
     private readonly collision: Sampler;
     private readonly elevation: Sampler;
@@ -65,9 +67,7 @@ export default class Simulation {
     private repulsionAmount: number;
     private repulsionForce: vec3;
     private fallVector: vec3;
-    private collisionState: CollisionState
-
-    public readonly vehicleMatrix: mat4;
+    private collisionState: CollisionState;
 
     constructor(canvas: HTMLCanvasElement, collision: Sampler, elevation: Sampler) {
         this.vehicleMatrix = mat4.create();
@@ -75,22 +75,22 @@ export default class Simulation {
         this.collision = collision;
         this.elevation = elevation;
         this.keyState = {
-            forward: false,
             backward: false,
+            forward: false,
             left: false,
-            right: false,
             ltrigger: false,
+            right: false,
             rtrigger: false,
-            use: false
+            use: false,
         };
-        document.addEventListener('keydown', this.onKeyDown.bind(this));
-        document.addEventListener('keyup', this.onKeyUp.bind(this));
+        document.addEventListener("keydown", this.onKeyDown.bind(this));
+        document.addEventListener("keyup", this.onKeyUp.bind(this));
 
         this.active = true;
         this.destroyed = false;
         this.falling = false;
-        this.movement = vec3.fromValues(0,0,0);
-        this.rotation = vec3.fromValues(0,0,0);
+        this.movement = vec3.fromValues(0, 0, 0);
+        this.rotation = vec3.fromValues(0, 0, 0);
         this.roll = 0.0;
         this.rollAxis = vec3.create();
         this.drift = 0.0;
@@ -101,7 +101,7 @@ export default class Simulation {
         this.shield = 1.0;
         this.angular = 0.0;
         this.quaternion = quat.create();
-        this.collisionPixelRatio = 2048.0 / 6000.0;;
+        this.collisionPixelRatio = 2048.0 / 6000.0;
         this.collisionDetection = true;
         this.collisionPreviousPosition = vec3.create();
         this.heightPixelRatio = 2048.0 / 6000.0;
@@ -121,7 +121,7 @@ export default class Simulation {
         this.tiltLerp = 0.05;
         this.tiltScale = 1; // 4.0;
         this.tiltVector = vec3.fromValues(5, 0, 0);
-        this.repulsionVLeft = vec3.fromValues(1,0,0);
+        this.repulsionVLeft = vec3.fromValues(1, 0, 0);
         this.repulsionVRight = vec3.fromValues(-1, 0, 0);
         this.repulsionVFront = vec3.fromValues(0, 0, 1);
         this.repulsionVScale = 1; // 4.0;
@@ -134,7 +134,7 @@ export default class Simulation {
         this.collisionState = {
             front: false,
             left: false,
-            right: false
+            right: false,
         };
     }
 
@@ -160,7 +160,7 @@ export default class Simulation {
 
         let rollAmount = 0;
         let angularAmount = 0;
-        let yawLeap = 0;
+        const yawLeap = 0;
 
         if (this.active) {
             if (this.keyState.left) {
@@ -219,7 +219,7 @@ export default class Simulation {
         if (vec3.equals(this.repulsionForce, zero3)) {
             vec3.copy(this.repulsionForce, zero3);
         } else {
-            if (this.repulsionForce[2] != 0) {
+            if (this.repulsionForce[2] !== 0) {
                 this.movement[2] = 0;
             }
             vec3.add(this.movement, this.movement, this.repulsionForce);
@@ -284,7 +284,7 @@ export default class Simulation {
 
     private onKeyDown(event) {
         const key = this.keyState;
-        switch(event.keyCode) {
+        switch (event.keyCode) {
             case 38: /*up*/ key.forward = true; break;
             case 40: /*down*/ key.backward = true; break;
             case 37: /*left*/ key.left = true; break;
@@ -298,7 +298,7 @@ export default class Simulation {
 
     private onKeyUp(event) {
         const key = this.keyState;
-        switch(event.keyCode) {
+        switch (event.keyCode) {
             case 38: /*up*/ key.forward = false; break;
             case 40: /*down*/ key.backward = false; break;
             case 37: /*left*/ key.left = false; break;
@@ -321,15 +321,15 @@ export default class Simulation {
         const dummypos = mat4.getTranslation(vec3.create(), this.dummyMatrix);
         const dummyquat = mat4.getRotation(quat.create(), this.dummyMatrix);
 
-        let x = this.collision.width / 2 + dummypos[0] * this.collisionPixelRatio;
-        let z = this.collision.height / 2 + dummypos[2] * this.collisionPixelRatio;
-        let pos = vec3.fromValues(x, 0, z);
+        const x = this.collision.width / 2 + dummypos[0] * this.collisionPixelRatio;
+        const z = this.collision.height / 2 + dummypos[2] * this.collisionPixelRatio;
+        const pos = vec3.fromValues(x, 0, z);
 
         const collision = this.collision.getPixelBilinear(x, z);
         if (collision.r < 255) {
 
             // shield
-            var sr = (this.getRealSpeed() / maxSpeed);
+            const sr = (this.getRealSpeed() / maxSpeed);
             this.shield -= sr * sr * 0.8 * shieldDamage;
 
             // repulsion
@@ -360,21 +360,21 @@ export default class Simulation {
 
             // game over
             if (rCol < 128 && lCol < 128) {
-                var fCol = this.collision.getPixel(Math.round(pos[0]+2), Math.round(pos[2]+2)).r;
-                if(fCol < 128) {
-                    console.log('GAMEOVER');
+                const fCol = this.collision.getPixel(Math.round(pos[0] + 2), Math.round(pos[2] + 2)).r;
+                if (fCol < 128) {
+                    console.log("GAMEOVER");
                     // this.fall();
                 }
             }
 
             this.speed *= collisionSpeedDecrease;
-            this.speed *= (1 - collisionSpeedDecreaseCoef * (1 - collision.r/255));
+            this.speed *= (1 - collisionSpeedDecreaseCoef * (1 - collision.r / 255));
             this.boost = 0;
         }
     }
 
     private getRealSpeed(): number {
-        return Math.round(this.speed+this.boost);
+        return Math.round(this.speed + this.boost);
     }
 
     private heightCheck(dt: number): void {
@@ -383,7 +383,7 @@ export default class Simulation {
 
         let x = this.elevation.width / 2 + dummypos[0] * this.heightPixelRatio;
         let z = this.elevation.height / 2 + dummypos[2] * this.heightPixelRatio;
-        let height = this.elevation.getPixelFBilinear(x, z) / this.heightScale + this.heightBias;
+        const height = this.elevation.getPixelFBilinear(x, z) / this.heightScale + this.heightBias;
         if (height < 16777) {
             const delta = height - dummypos[1];
             if (delta > 0) {
@@ -401,7 +401,7 @@ export default class Simulation {
         z = this.elevation.height / 2 + this.gradientVector[2] * this.heightPixelRatio;
         let nheight = this.elevation.getPixelFBilinear(x, z) / this.heightScale + this.heightBias;
         if (nheight < 16777) {
-            this.gradientTarget = -Math.atan2(nheight-height, 5.0) * this.gradientScale;
+            this.gradientTarget = -Math.atan2(nheight - height, 5.0) * this.gradientScale;
         }
 
         // tilt
@@ -420,11 +420,10 @@ export default class Simulation {
             nheight = this.elevation.getPixelFBilinear(x, z) / this.heightScale + this.heightBias;
         }
         if (nheight < 16777) {
-            this.tiltTarget = Math.atan2(nheight-height, 5.0) * this.tiltScale;
+            this.tiltTarget = Math.atan2(nheight - height, 5.0) * this.tiltScale;
         }
     }
 }
-
 
 interface KeyState {
     forward: boolean;
