@@ -117,6 +117,9 @@ declare module Filament {
 
     class Scene {
         public addEntity(entity: Entity);
+        public getLightCount(): number;
+        public getRenderableCount(): number;
+        public remove(entity: Entity);
         public setIndirectLight(ibl: IndirectLight);
         public setSkybox(sky: Skybox);
     }

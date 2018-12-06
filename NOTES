@@ -1,18 +1,14 @@
-Use filamesh
-
 ChaseCamera, remove Trackball
 
 Simulation: Fix distortion of ship etc
 
 Simulation: boosterCheck
 
-Download three files for each mesh via "createObjectURL"
+Replace PNG with KTX
 
-Faster, more progressive loading
-    Replace geometry with binary files
-    Replace PNG with KTX
-    Use bmp suffix on geo *and* on images to enable ZIP compression
-    Use workers, or remove them
+Use bmp suffix on geo *and* on images to enable ZIP compression
+
+Use workers, or remove them
 
 Audio
 
@@ -25,6 +21,8 @@ get rid of math.ts?
 fix culling issue
 
 simplify Simulation
+
+rename tracks.filamat
 
 Filament Typescript annotation should allow glmatrix types, eg this is annoying:
     tcm.setTransform(inst, vehicleMatrix as unknown as number[]);

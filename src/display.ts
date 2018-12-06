@@ -13,9 +13,7 @@ import "./filament";
 
 import * as urls from "./urls";
 
-import { mat3, mat4, quat, vec3, vec4 } from "gl-matrix";
-import { vec4_packSnorm16 } from "./math";
-import { processMesh } from "./meshloader";
+import { mat4, vec3 } from "gl-matrix";
 
 const camheight = 100;
 
@@ -66,28 +64,43 @@ export default class Display {
 
         this.material = this.engine.createMaterial(urls.tracksMaterial);
 
-        const assets = [urls.diffuse, urls.specular, urls.normal, urls.mesh];
+        // Load the high-res skybox only after every other asset has been loaded.
+        const addEntity = (entity) => {
+            this.scene.addEntity(entity);
+            if (5 === this.scene.getRenderableCount()) {
+                Filament.fetch([urls.skyLarge], () => {
+                    this.engine.destroySkybox(this.skybox);
+                    this.skybox = this.engine.createSkyFromKtx(urls.skyLarge);
+                    this.scene.setSkybox(this.skybox);
+                });
+            }
+        };
 
-        const tracks = assets.map((tex) => "tracks/" + tex);
-        tracks.push(urls.skyLarge);
-        Filament.fetch(tracks, this.onLoadedTracks.bind(this));
+        const filenames = [urls.diffuse, urls.specular, urls.normal, urls.mesh];
+        const shipmi = this.material.createInstance();
+        const asset = "ship";
+        const assetUrls = filenames.map((path) => `${asset}/${path}`);
 
-        const shipAssets = assets.map((tex) => "ship/" + tex);
-        Filament.fetch(shipAssets, this.onLoadedShip.bind(this));
-
-        const scrapers1 = assets.map((tex) => "scrapers1/" + tex);
-        Filament.fetch(scrapers1, this.onLoadedScrapers1.bind(this));
-
-        const scrapers2 = assets.map((tex) => "scrapers2/" + tex);
-        Filament.fetch(scrapers1, this.onLoadedScrapers2.bind(this));
+        // Load the ship first since it determines camera, then all other assets.
+        Filament.fetch(assetUrls, () => {
+            this.ship = this.createRenderable(asset, shipmi);
+            addEntity(this.ship);
+            for (const bgasset of ["tracks", "scrapers1", "scrapers2"]) {
+                const bgurls = filenames.map((path) => `${bgasset}/${path}`);
+                Filament.fetch(bgurls, () => {
+                    const bgmi = this.material.createInstance();
+                    addEntity(this.createRenderable(bgasset, bgmi));
+                });
+            }
+        });
 
         const sunlight = Filament.EntityManager.get().create();
-        this.scene.addEntity(sunlight);
         Filament.LightManager.Builder(Filament.LightManager$Type.SUN)
             .color([0.98, 0.92, 0.89])
             .intensity(110000.0)
             .direction([0.5, -1, 0])
             .build(this.engine, sunlight);
+        addEntity(sunlight);
 
         this.resize = this.resize.bind(this);
         window.addEventListener("resize", this.resize);
@@ -124,33 +137,6 @@ export default class Display {
         }
 
         this.renderer.render(this.swapChain, this.view);
-    }
-
-    private onLoadedTracks() {
-        const matinstance = this.material.createInstance();
-        const tracks = this.createRenderable("tracks", matinstance);
-        this.scene.addEntity(tracks);
-        this.engine.destroySkybox(this.skybox);
-        this.skybox = this.engine.createSkyFromKtx(urls.skyLarge);
-        this.scene.setSkybox(this.skybox);
-    }
-
-    private onLoadedShip() {
-        const matinstance = this.material.createInstance();
-        this.ship = this.createRenderable("ship", matinstance);
-        this.scene.addEntity(this.ship);
-    }
-
-    private onLoadedScrapers1() {
-        const matinstance = this.material.createInstance();
-        const scrapers1 = this.createRenderable("scrapers1", matinstance);
-        this.scene.addEntity(scrapers1);
-    }
-
-    private onLoadedScrapers2() {
-        const matinstance = this.material.createInstance();
-        const scrapers2 = this.createRenderable("scrapers2", matinstance);
-        this.scene.addEntity(scrapers2);
     }
 
     private resize() {
