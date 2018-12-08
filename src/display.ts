@@ -152,9 +152,9 @@ export default class Display {
     }
 
     private createRenderable(name, matinstance) {
-        const diffuse = this.engine.createTextureFromPng(`${name}/${urls.diffuse}`);
-        const specular = this.engine.createTextureFromPng(`${name}/${urls.specular}`);
-        const normal = this.engine.createTextureFromPng(`${name}/${urls.normal}`);
+        const diffuse = this.engine.createTextureFromJpeg(`${name}/${urls.diffuse}`);
+        const specular = this.engine.createTextureFromJpeg(`${name}/${urls.specular}`);
+        const normal = this.engine.createTextureFromJpeg(`${name}/${urls.normal}`);
         matinstance.setTextureParameter("diffuse", diffuse, this.sampler);
         matinstance.setTextureParameter("specular", specular, this.sampler);
         matinstance.setTextureParameter("normal", normal, this.sampler);

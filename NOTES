@@ -4,15 +4,15 @@ Simulation: Fix distortion of ship etc
 
 Simulation: boosterCheck
 
-Replace PNG with KTX
-
 Use bmp suffix on geo *and* on images to enable ZIP compression
-
-Use workers, or remove them
 
 Audio
 
 Implement game menu
+
+Use workers, or remove them
+
+Clearcoat on ship; generally better rendering.
 
 Fork me ribbon (already exists in gh-pages)
 

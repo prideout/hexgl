@@ -1,5 +1,5 @@
 {
-  "name": "vanilla",
+  "name": "hexgl_filament",
   "main": "index.js",
   "version": "1.0.0",
   "scripts": {
