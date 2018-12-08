@@ -13,15 +13,15 @@ import "./filament";
 import { mat4 } from "gl-matrix";
 
 export default class ChaseCamera {
-    readonly camera: Filament.Camera;
-    readonly target: mat4;
+    private readonly camera: Filament.Camera;
+    private readonly target: mat4;
 
     constructor(camera: Filament.Camera, target: mat4) {
         this.camera = camera;
         this.target = target;
     }
 
-    tick(dt: number) {
-
+    public tick(dt: number) {
+        console.info("tick");
     }
 }

@@ -33,34 +33,34 @@ class App {
         const canvas = document.getElementsByTagName("canvas")[0];
         this.display = new Display(canvas);
         this.chasecam = new ChaseCamera(this.display.camera, vehicleMatrix);
-        (() => {
-            let k = 0;
-            const onload = () => {
-                if (++k === 2) {
-                    this.simulation = new Simulation(canvas, collision, elevation);
-                    this.simulation.resetPosition(initialVehiclePosition);
-                }
-            };
-            const collision = new Sampler(urls.collision, onload);
-            const elevation = new Sampler(urls.elevation, onload);
-        })();
+        const collision = new Sampler(urls.collision);
+        const elevation = new Sampler(urls.elevation);
+        this.simulation = new Simulation(canvas, collision, elevation);
+        this.simulation.resetPosition(initialVehiclePosition);
         this.tick = this.tick.bind(this);
         window.requestAnimationFrame(this.tick);
     }
 
     private tick() {
+        // Determine the time step.
         const time = Date.now();
         if (this.time === null) {
             this.time = time;
         }
         const dt = (time - this.time) * 0.1;
         this.time = time;
-        if (this.simulation) {
-            this.simulation.tick(dt);
-            mat4.copy(vehicleMatrix, this.simulation.vehicleMatrix);
-            this.chasecam.tick(dt);
-        }
+
+        // Update the vehicle orientation and position.
+        this.simulation.tick(dt);
+        mat4.copy(vehicleMatrix, this.simulation.vehicleMatrix);
+
+        // Update the camera position.
+        this.chasecam.tick(dt);
+
+        // Render the 3D scene.
         this.display.render(vehicleMatrix);
+
+        // Request the next frame.
         window.requestAnimationFrame(this.tick);
     }
 }

@@ -148,6 +148,9 @@ export default class Simulation {
     }
 
     public tick(dt: number) {
+        if (!this.collision.ready() || !this.elevation.ready()) {
+            return;
+        }
         if (this.falling) {
             mat4.translate(this.vehicleMatrix, this.vehicleMatrix, this.fallVector);
             return;

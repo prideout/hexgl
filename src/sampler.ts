@@ -25,7 +25,7 @@ export default class Sampler {
     private pixels: ImageData;
     private canvas: HTMLCanvasElement;
 
-    constructor(url: string, cb: () => void) {
+    constructor(url: string) {
         this.image = new Image();
         this.pixels = null;
         this.canvas = null;
@@ -40,9 +40,12 @@ export default class Sampler {
             this.height = this.pixels.height;
             this.canvas = null;
             this.image = null;
-            cb();
         };
         this.image.src = url;
+    }
+
+    public ready(): boolean {
+        return this.image === null;
     }
 
     public getPixel(x: number, y: number): Color {
