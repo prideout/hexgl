@@ -38,6 +38,7 @@ class App {
         this.simulation = new Simulation(canvas, collision, elevation);
         this.simulation.resetPosition(initialVehiclePosition);
         this.tick = this.tick.bind(this);
+        this.time = null;
         window.requestAnimationFrame(this.tick);
     }
 
@@ -55,7 +56,7 @@ class App {
         mat4.copy(vehicleMatrix, this.simulation.vehicleMatrix);
 
         // Update the camera position.
-        this.chasecam.tick(dt);
+        this.chasecam.tick(dt, this.simulation.getSpeedRatio());
 
         // Render the 3D scene.
         this.display.render(vehicleMatrix);

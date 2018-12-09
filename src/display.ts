@@ -13,14 +13,7 @@ import "./filament";
 
 import * as urls from "./urls";
 
-import { mat4, vec3 } from "gl-matrix";
-
-const camheight = 100;
-
-declare class Trackball {
-    constructor(canvas: HTMLCanvasElement, options: object);
-    public getMatrix(): number[];
-}
+import { mat4 } from "gl-matrix";
 
 export default class Display {
 
@@ -35,15 +28,10 @@ export default class Display {
     private renderer: Filament.Renderer;
     private sampler: Filament.TextureSampler;
     private material: Filament.Material;
-    private trackball: Trackball;
     private ship: Filament.Entity;
 
     constructor(canvas) {
         this.canvas = canvas;
-        this.trackball = new Trackball(canvas, {
-            clampTilt: 0.9 * Math.PI / 2,
-            startSpin: 0.0,
-        });
         this.engine = Filament.Engine.create(canvas);
         this.scene = this.engine.createScene();
         this.skybox = this.engine.createSkyFromKtx(urls.skySmall);
@@ -108,34 +96,12 @@ export default class Display {
     }
 
     public render(vehicleMatrix: mat4) {
-        const shippos = mat4.getTranslation(vec3.create(), vehicleMatrix);
-
-        const eye = vec3.fromValues(0, 0, 1);
-        const xform = this.trackball.getMatrix() as unknown as mat4;
-        mat4.rotateX(xform, xform, -Math.PI * 0.5);
-        vec3.transformMat4(eye, eye, xform);
-
-        const dx = eye[0];
-        const dy = eye[1];
-        const dz = eye[2];
-
-        const eye2 = [
-                shippos[0] + camheight * dx,
-                shippos[1] + camheight * dy,
-                shippos[2] + camheight * dz ];
-
-        const center2 = [ shippos[0], shippos[1], shippos[2] ];
-        const up2 =     [ 0,  0,  1 ];
-
-        this.camera.lookAt(eye2, center2, up2);
-
         if (this.ship) {
             const tcm = this.engine.getTransformManager();
             const inst = tcm.getInstance(this.ship);
             tcm.setTransform(inst, vehicleMatrix as unknown as number[]);
             inst.delete();
         }
-
         this.renderer.render(this.swapChain, this.view);
     }
 

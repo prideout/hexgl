@@ -1,5 +1,3 @@
-ChaseCamera, remove Trackball
-
 Simulation: Fix distortion of ship etc
 
 Simulation: boosterCheck
@@ -21,6 +19,8 @@ get rid of math.ts?
 fix culling issue
 
 simplify Simulation
+
+getSpeedRatio => getNormalizedSpeed.  ChaseCamera's tick should take matrix as argument.
 
 rename tracks.filamat
 

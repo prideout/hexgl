@@ -7,6 +7,7 @@
 //   - readonly vehicleMatrix: mat4;
 //   - resetPosition(pos: vec3)
 //   - tick(dt: number)
+//   - getSpeedRatio(): number
 //
 // HexGL by Thibaut 'BKcore' Despoulain <http://bkcore.com>
 // Rewritten by Philip Rideout <https://prideout.net>
@@ -23,6 +24,9 @@ export default class Simulation {
     private readonly collision: Sampler;
     private readonly elevation: Sampler;
     private readonly keyState: KeyState;
+    private readonly maxSpeed: number;
+    private readonly boosterSpeed: number;
+
     private active: boolean;
     private destroyed: boolean;
     private falling: boolean;
@@ -86,6 +90,8 @@ export default class Simulation {
         document.addEventListener("keydown", this.onKeyDown.bind(this));
         document.addEventListener("keyup", this.onKeyUp.bind(this));
 
+        this.maxSpeed = 7.0;
+        this.boosterSpeed = this.maxSpeed * 0.2;
         this.active = true;
         this.destroyed = false;
         this.falling = false;
@@ -283,6 +289,10 @@ export default class Simulation {
         }
 
         mat4.multiply(xform, this.dummyMatrix, xform);
+    }
+
+    public getSpeedRatio(): number {
+        return (this.speed + this.boost) / this.maxSpeed;
     }
 
     private onKeyDown(event) {
