@@ -247,16 +247,19 @@ export default class Simulation {
         mat4.translate(this.dummyMatrix, this.dummyMatrix, ty);
         this.collisionCheck(dt);
 
-        quat.set(this.quaternion, this.rotation[0], this.rotation[1], this.rotation[2], 1);
-        quat.normalize(this.quaternion, this.quaternion);
-        const dummyquat = quat.create();
-        mat4.getRotation(dummyquat, this.dummyMatrix);
+        // The original HexGL app directly manipulated the Y component of this quat value, but I
+        // feel it is more sensical to build the quat from from Euler anglers.
+        const degrees = this.rotation[1] * 150.0;
+        quat.identity(this.quaternion);
+        quat.fromEuler(this.quaternion, 0, degrees, 0);
+
+        const dummyquat = mat4.getRotation(quat.create(), this.dummyMatrix);
         quat.multiply(dummyquat, dummyquat, this.quaternion);
 
         const dummypos = mat4.getTranslation(vec3.create(), this.dummyMatrix);
         mat4.fromRotationTranslation(this.dummyMatrix, dummyquat, dummypos);
 
-        // Finally, formulate the final transformation matrix.
+        // Formulate the final transformation matrix.
         const xform = this.vehicleMatrix;
         mat4.identity(xform);
 

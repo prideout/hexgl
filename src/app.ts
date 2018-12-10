@@ -7,7 +7,7 @@
 
 import * as urls from "./urls";
 
-import { mat4, vec3 } from "gl-matrix";
+import { glMatrix, mat4, vec3 } from "gl-matrix";
 import { createWorker, ITypedWorker } from "typed-web-workers";
 
 import ChaseCamera from "./chasecam";
@@ -19,6 +19,8 @@ const initialVehiclePosition = vec3.fromValues(-1134 * 2, 400, -886);
 const vehicleMatrix = mat4.create();
 
 Filament.init([urls.skySmall, urls.ibl, urls.tracksMaterial ], () => {
+    // HexGL requires 64-bit precision and fast instantiation of vectors.
+    glMatrix.setMatrixArrayType(Array);
     // The global app instance can be accessed for debugging purposes only.
     window["app"] = new App();
 });

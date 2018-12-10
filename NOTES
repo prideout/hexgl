@@ -1,8 +1,11 @@
-Simulation: Fix distortion of ship
+Corruption occurs when continuously rotation.
+    Store position and orientation separately?
 
 Simulation: boosterCheck
 
-Use bmp suffix on geo *and* on images to enable ZIP compression
+Add the START banner and 3,2,1 animation
+
+Use bmp suffix to enable ZIP compression
 
 Audio
 
@@ -10,7 +13,7 @@ Implement game menu
 
 Use workers, or remove them
 
-Clearcoat on ship; generally better rendering.
+Clearcoat on ship, add shadows, generally better rendering.
 
 Fork me ribbon (already exists in gh-pages)
 
