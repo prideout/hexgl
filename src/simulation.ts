@@ -225,7 +225,7 @@ export default class Simulation {
         this.speedRatio = this.speed / maxSpeed;
         this.movement[2] += this.speed * dt;
 
-        if (vec3.equals(this.repulsionForce, zero3)) {
+        if (vec3AlmostEquals(this.repulsionForce, zero3, 0.0001)) {
             vec3.copy(this.repulsionForce, zero3);
         } else {
             if (this.repulsionForce[2] !== 0) {
@@ -360,13 +360,13 @@ export default class Simulation {
 
             this.repulsionAmount = Math.max(0.8, Math.min(repulsionCap, this.speed * repulsionRatio));
             if (rCol > lCol) {
-                this.repulsionForce[0] += -this.repulsionAmount;
+                this.repulsionForce[0] -= this.repulsionAmount;
                 this.collisionState.left = true;
-            } else if (rCol > lCol) {
+            } else if (rCol < lCol) {
                 this.repulsionForce[0] += this.repulsionAmount;
                 this.collisionState.right = true;
             } else {
-                this.repulsionForce[2] += -this.repulsionAmount * 4;
+                this.repulsionForce[2] -= this.repulsionAmount * 4;
                 this.collisionState.front = true;
                 this.speed = 0;
             }
@@ -478,3 +478,11 @@ const angularLerp = 0.35;
 const fallVector = vec3.fromValues(0, -20, 0);
 const gradientAxis = vec3.fromValues(1, 0, 0);
 const tiltAxis = vec3.fromValues(0, 0, 1);
+
+function vec3AlmostEquals(a: vec3, b: vec3, vepsilon: number): boolean {
+    const a0 = a[0], a1 = a[1], a2 = a[2];
+    const b0 = b[0], b1 = b[1], b2 = b[2];
+    return (Math.abs(a0 - b0) <= vepsilon * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+            Math.abs(a1 - b1) <= vepsilon * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+            Math.abs(a2 - b2) <= vepsilon * Math.max(1.0, Math.abs(a2), Math.abs(b2)));
+}
