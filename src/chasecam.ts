@@ -1,8 +1,7 @@
 // -------------------------------------------------------------------------------------------------
-// The ChaseCamera adjusts a camera to make it follow a target whose position and orientation are
-// represented by a shared matrix.
+// The ChaseCamera adjusts a camera to make it follow a target.
 //
-//   - constructor(camera: Filament.Camera, target: mat4)
+//   - constructor(camera: Filament.Camera, vehicle: Vehicle)
 //   - tick(dt: number, speedRatio: number)
 //
 // HexGL by Thibaut 'BKcore' Despoulain <http://bkcore.com>
@@ -11,11 +10,12 @@
 
 import "./filament";
 
-import { mat4, quat, vec3 } from "gl-matrix";
+import { vec3 } from "gl-matrix";
+import Vehicle from "./vehicle";
 
 export default class ChaseCamera {
     private readonly camera: Filament.Camera;
-    private readonly target: mat4;
+    private readonly vehicle: Vehicle;
     private readonly speedOffsetMax: number;
     private readonly yoffset: number;
     private readonly zoffset: number;
@@ -23,9 +23,9 @@ export default class ChaseCamera {
 
     private speedOffset: number;
 
-    constructor(camera: Filament.Camera, target: mat4) {
+    constructor(camera: Filament.Camera, vehicle: Vehicle) {
         this.camera = camera;
-        this.target = target;
+        this.vehicle = vehicle;
         this.speedOffset = 0;
         this.speedOffsetMax = 10;
         this.yoffset = 8.0;
@@ -34,20 +34,16 @@ export default class ChaseCamera {
     }
 
     public tick(dt: number, speedRatio: number) {
-        const vehicleOrientation = quat.create();
-        mat4.getRotation(vehicleOrientation, this.target);
-
         const up = vec3.fromValues(0, 1, 0);
-        vec3.transformQuat(up, up, vehicleOrientation);
+        vec3.transformQuat(up, up, this.vehicle.orientation);
 
         const dir = vec3.fromValues(0, 0, 1);
-        vec3.transformQuat(dir, dir, vehicleOrientation);
+        vec3.transformQuat(dir, dir, this.vehicle.orientation);
 
         this.speedOffset += (this.speedOffsetMax * speedRatio - this.speedOffset) *
                 Math.min(1.0, 0.3 * dt);
 
-        const position = vec3.create();
-        mat4.getTranslation(position, this.target);
+        const position = vec3.copy(vec3.create(), this.vehicle.position);
 
         vec3.scale(dir, dir, this.zoffset + this.speedOffset);
         vec3.subtract(position, position, dir);

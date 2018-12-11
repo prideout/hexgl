@@ -16,7 +16,6 @@ import Sampler from "./sampler";
 import Simulation from "./simulation";
 
 const initialVehiclePosition = vec3.fromValues(-1134 * 2, 400, -886);
-const vehicleMatrix = mat4.create();
 
 Filament.init([urls.skySmall, urls.ibl, urls.tracksMaterial ], () => {
     // HexGL requires 64-bit precision and fast instantiation of vectors.
@@ -34,11 +33,11 @@ class App {
     constructor() {
         const canvas = document.getElementsByTagName("canvas")[0];
         this.display = new Display(canvas);
-        this.chasecam = new ChaseCamera(this.display.camera, vehicleMatrix);
         const collision = new Sampler(urls.collision);
         const elevation = new Sampler(urls.elevation);
-        this.simulation = new Simulation(canvas, collision, elevation);
+        this.simulation = new Simulation(collision, elevation);
         this.simulation.resetPosition(initialVehiclePosition);
+        this.chasecam = new ChaseCamera(this.display.camera, this.simulation.vehicle);
         this.tick = this.tick.bind(this);
         this.time = null;
         window.requestAnimationFrame(this.tick);
@@ -55,13 +54,12 @@ class App {
 
         // Update the vehicle orientation and position.
         this.simulation.tick(dt);
-        mat4.copy(vehicleMatrix, this.simulation.vehicleMatrix);
 
         // Update the camera position.
         this.chasecam.tick(dt, this.simulation.getSpeedRatio());
 
         // Render the 3D scene.
-        this.display.render(vehicleMatrix);
+        this.display.render(this.simulation.vehicle.getMatrix());
 
         // Request the next frame.
         window.requestAnimationFrame(this.tick);

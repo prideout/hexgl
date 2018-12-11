@@ -1,7 +1,8 @@
-Corruption occurs when continuously rotation.
-    Store position and orientation separately?
-
-Simulation: boosterCheck
+Simulation:
+    Remove vehicleMatrix / dummyMatrix in favor of Vehicle
+    Corruption occurs after continuously rotating in place.
+    Yaw / Pitch / Roll terminology
+    boosterCheck
 
 Add the START banner and 3,2,1 animation
 

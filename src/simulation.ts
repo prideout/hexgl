@@ -3,8 +3,8 @@
 // vehicle's position and orientation. Looks at two images (collision / elevation) to glean
 // information about the race track.
 //
-//   - constructor(canvas: HTMLCanvasElement, collision: Sampler, elevation: Sampler)
-//   - readonly vehicleMatrix: mat4;
+//   - constructor(collision: Sampler, elevation: Sampler)
+//   - readonly vehicle: Vehicle;
 //   - resetPosition(pos: vec3)
 //   - tick(dt: number)
 //   - getSpeedRatio(): number
@@ -15,10 +15,11 @@
 
 import Sampler from "./sampler";
 
-import { mat3, mat4, quat, vec3, vec4 } from "gl-matrix";
+import { mat4, quat, vec3 } from "gl-matrix";
+import Vehicle from "./vehicle";
 
 export default class Simulation {
-    public readonly vehicleMatrix: mat4;
+    public readonly vehicle: Vehicle;
 
     private readonly dummyMatrix: mat4;
     private readonly collision: Sampler;
@@ -26,6 +27,7 @@ export default class Simulation {
     private readonly keyState: KeyState;
     private readonly maxSpeed: number;
     private readonly boosterSpeed: number;
+    private readonly vehicleMatrix: mat4;
 
     private active: boolean;
     private destroyed: boolean;
@@ -73,7 +75,8 @@ export default class Simulation {
     private fallVector: vec3;
     private collisionState: CollisionState;
 
-    constructor(canvas: HTMLCanvasElement, collision: Sampler, elevation: Sampler) {
+    constructor(collision: Sampler, elevation: Sampler) {
+        this.vehicle = new Vehicle();
         this.vehicleMatrix = mat4.create();
         this.dummyMatrix = mat4.create();
         this.collision = collision;
@@ -292,6 +295,9 @@ export default class Simulation {
         }
 
         mat4.multiply(xform, this.dummyMatrix, xform);
+
+        mat4.getTranslation(this.vehicle.position, xform);
+        mat4.getRotation(this.vehicle.orientation, xform);
     }
 
     public getSpeedRatio(): number {
