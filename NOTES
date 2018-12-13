@@ -1,5 +1,5 @@
 Simulation:
-    Remove vehicleMatrix / dummyMatrix in favor of Vehicle
+    Remove "dummyMatrix" maybe? Or rename to yawMatrix?
     Corruption occurs after continuously rotating in place.
     Yaw / Pitch / Roll terminology
     boosterCheck

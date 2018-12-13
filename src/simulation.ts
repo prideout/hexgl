@@ -27,7 +27,6 @@ export default class Simulation {
     private readonly keyState: KeyState;
     private readonly maxSpeed: number;
     private readonly boosterSpeed: number;
-    private readonly vehicleMatrix: mat4;
 
     private active: boolean;
     private destroyed: boolean;
@@ -77,7 +76,6 @@ export default class Simulation {
 
     constructor(collision: Sampler, elevation: Sampler) {
         this.vehicle = new Vehicle();
-        this.vehicleMatrix = mat4.create();
         this.dummyMatrix = mat4.create();
         this.collision = collision;
         this.elevation = elevation;
@@ -147,12 +145,7 @@ export default class Simulation {
         };
     }
 
-    public getMatrix(): mat4 {
-        return this.vehicleMatrix;
-    }
-
     public resetPosition(pos: vec3) {
-        mat4.fromTranslation(this.vehicleMatrix, pos);
         mat4.fromTranslation(this.dummyMatrix, pos);
     }
 
@@ -161,7 +154,7 @@ export default class Simulation {
             return;
         }
         if (this.falling) {
-            mat4.translate(this.vehicleMatrix, this.vehicleMatrix, this.fallVector);
+            vec3.add(this.vehicle.position, this.vehicle.position, this.fallVector);
             return;
         }
 
@@ -263,8 +256,7 @@ export default class Simulation {
         mat4.fromRotationTranslation(this.dummyMatrix, dummyquat, dummypos);
 
         // Formulate the final transformation matrix.
-        const xform = this.vehicleMatrix;
-        mat4.identity(xform);
+        const xform = mat4.identity(mat4.create());
 
         // Gradient
         const gradientDelta = (this.gradientTarget - (yawLeap + this.gradient)) * this.gradientLerp;
