@@ -1,6 +1,6 @@
 Simulation:
     Remove "dummyMatrix" maybe? Or rename to yawMatrix?
-    Corruption occurs after continuously rotating in place.
+    Corruption occurs after continuously rotating clockwise in place.
     Yaw / Pitch / Roll terminology
     boosterCheck
 

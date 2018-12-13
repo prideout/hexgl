@@ -32,7 +32,6 @@ export default class Simulation {
     private destroyed: boolean;
     private falling: boolean;
     private movement: vec3;
-    private rotation: vec3;
     private roll: number;
     private rollAxis: vec3;
     private drift: number;
@@ -40,7 +39,7 @@ export default class Simulation {
     private speedRatio: number;
     private boost: number;
     private shield: number;
-    private angular: number;
+    private yawAngle: number;
     private quaternion: quat;
     private collisionPixelRatio: number;
     private collisionDetection: boolean;
@@ -97,7 +96,6 @@ export default class Simulation {
         this.destroyed = false;
         this.falling = false;
         this.movement = vec3.fromValues(0, 0, 0);
-        this.rotation = vec3.fromValues(0, 0, 0);
         this.roll = 0.0;
         this.rollAxis = vec3.create();
         this.drift = 0.0;
@@ -106,7 +104,7 @@ export default class Simulation {
         this.speedRatio = 0.0;
         this.boost = 0.0;
         this.shield = 1.0;
-        this.angular = 0.0;
+        this.yawAngle = 0.0;
         this.quaternion = quat.create();
         this.collisionPixelRatio = 2048.0 / 6000.0;
         this.collisionDetection = true;
@@ -158,22 +156,21 @@ export default class Simulation {
             return;
         }
 
-        this.rotation[1] = 0;
         vec3.set(this.movement, 0, 0, 0);
         this.drift = -this.drift * driftLerp;
-        this.angular = -this.angular * angularLerp * .5;
+        this.yawAngle = -this.yawAngle * yawAngleLerp * .5;
 
         let rollAmount = 0;
-        let angularAmount = 0;
+        let yawAngleAmount = 0;
         const yawLeap = 0;
 
         if (this.active) {
             if (this.keyState.left) {
-                angularAmount += angularSpeed * dt;
+                yawAngleAmount += yawAngleSpeed * dt;
                 rollAmount -= this.rollAngle;
             }
             if (this.keyState.right) {
-                angularAmount -= angularSpeed * dt;
+                yawAngleAmount -= yawAngleSpeed * dt;
                 rollAmount += this.rollAngle;
             }
 
@@ -185,9 +182,9 @@ export default class Simulation {
 
             if (this.keyState.ltrigger) {
                 if (this.keyState.left) {
-                    angularAmount += airAngularSpeed * dt;
+                    yawAngleAmount += airAngularSpeed * dt;
                 } else {
-                    angularAmount += airAngularSpeed * .5 * dt;
+                    yawAngleAmount += airAngularSpeed * .5 * dt;
                 }
                 this.speed -= airBrake * dt;
                 this.drift += (airDrift - this.drift) * driftLerp;
@@ -200,9 +197,9 @@ export default class Simulation {
 
             if (this.keyState.rtrigger) {
                 if (this.keyState.right) {
-                    angularAmount -= airAngularSpeed * dt;
+                    yawAngleAmount -= airAngularSpeed * dt;
                 } else {
-                    angularAmount -= airAngularSpeed * .5 * dt;
+                    yawAngleAmount -= airAngularSpeed * .5 * dt;
                 }
                 this.speed -= airBrake * dt;
                 this.drift += (-airDrift - this.drift) * driftLerp;
@@ -214,8 +211,7 @@ export default class Simulation {
             }
         }
 
-        this.angular += (angularAmount - this.angular) * angularLerp;
-        this.rotation[1] = this.angular;
+        this.yawAngle += (yawAngleAmount - this.yawAngle) * yawAngleLerp;
 
         this.speed = Math.max(0, Math.min(this.speed, maxSpeed));
         this.speedRatio = this.speed / maxSpeed;
@@ -245,7 +241,7 @@ export default class Simulation {
 
         // The original HexGL app directly manipulated the Y component of this quat value, but I
         // feel it is more sensical to build the quat from from Euler anglers.
-        const degrees = this.rotation[1] * 150.0;
+        const degrees = this.yawAngle * 150.0;
         quat.identity(this.quaternion);
         quat.fromEuler(this.quaternion, 0, degrees, 0);
 
@@ -464,7 +460,7 @@ const airBrake = 0.02;
 const maxSpeed = 7.0;
 const boosterSpeed = this.maxSpeed * 0.2;
 const boosterDecay = 0.01;
-const angularSpeed = 0.005;
+const yawAngleSpeed = 0.005;
 const airAngularSpeed = 0.0065;
 const repulsionRatio = 0.5;
 const repulsionCap = 2.5;
@@ -475,7 +471,7 @@ const maxShield = 1.0;
 const shieldTiming = 0;
 const shieldDamage = 0.25;
 const driftLerp = 0.35;
-const angularLerp = 0.35;
+const yawAngleLerp = 0.35;
 const fallVector = vec3.fromValues(0, -20, 0);
 const gradientAxis = vec3.fromValues(1, 0, 0);
 const tiltAxis = vec3.fromValues(0, 0, 1);
