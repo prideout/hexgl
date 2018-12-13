@@ -37,7 +37,7 @@ class App {
         const elevation = new Sampler(urls.elevation);
         this.simulation = new Simulation(collision, elevation);
         this.simulation.resetPosition(initialVehiclePosition);
-        this.chasecam = new ChaseCamera(this.display.camera, this.simulation.vehicle);
+        this.chasecam = new ChaseCamera(this.display.camera, this.simulation.getVehicle());
         this.tick = this.tick.bind(this);
         this.time = null;
         window.requestAnimationFrame(this.tick);
@@ -56,10 +56,10 @@ class App {
         this.simulation.tick(dt);
 
         // Update the camera position.
-        this.chasecam.tick(dt, this.simulation.getSpeedRatio());
+        this.chasecam.tick(dt, this.simulation.getNormalizedSpeed());
 
         // Render the 3D scene.
-        this.display.render(this.simulation.vehicle.getMatrix());
+        this.display.render(this.simulation.getVehicle().getMatrix());
 
         // Request the next frame.
         window.requestAnimationFrame(this.tick);

@@ -2,7 +2,7 @@
 // The ChaseCamera adjusts a camera to make it follow a target.
 //
 //   - constructor(camera: Filament.Camera, vehicle: Vehicle)
-//   - tick(dt: number, speedRatio: number)
+//   - tick(dt: number, speed: number)
 //
 // HexGL by Thibaut 'BKcore' Despoulain <http://bkcore.com>
 // Rewritten by Philip Rideout <https://prideout.net>
@@ -33,14 +33,14 @@ export default class ChaseCamera {
         this.viewOffset = 10.0;
     }
 
-    public tick(dt: number, speedRatio: number) {
+    public tick(dt: number, speed: number) {
         const up = vec3.fromValues(0, 1, 0);
         vec3.transformQuat(up, up, this.vehicle.orientation);
 
         const dir = vec3.fromValues(0, 0, 1);
         vec3.transformQuat(dir, dir, this.vehicle.orientation);
 
-        this.speedOffset += (this.speedOffsetMax * speedRatio - this.speedOffset) *
+        this.speedOffset += (this.speedOffsetMax * speed - this.speedOffset) *
                 Math.min(1.0, 0.3 * dt);
 
         const position = vec3.copy(vec3.create(), this.vehicle.position);

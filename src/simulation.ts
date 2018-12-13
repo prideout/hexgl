@@ -4,10 +4,10 @@
 // information about the race track.
 //
 //   - constructor(collision: Sampler, elevation: Sampler)
-//   - readonly vehicle: Vehicle;
+//   - getVehicle(): Vehicle;
 //   - resetPosition(pos: vec3)
 //   - tick(dt: number)
-//   - getSpeedRatio(): number
+//   - getNormalizedSpeed(): number
 //
 // HexGL by Thibaut 'BKcore' Despoulain <http://bkcore.com>
 // Rewritten by Philip Rideout <https://prideout.net>
@@ -19,9 +19,9 @@ import { mat4, quat, vec3 } from "gl-matrix";
 import Vehicle from "./vehicle";
 
 export default class Simulation {
-    public readonly vehicle: Vehicle;
+    private readonly gfxvehicle: Vehicle;
+    private readonly simvehicle: Vehicle;
 
-    private readonly dummyMatrix: mat4;
     private readonly collision: Sampler;
     private readonly elevation: Sampler;
     private readonly keyState: KeyState;
@@ -74,8 +74,13 @@ export default class Simulation {
     private collisionState: CollisionState;
 
     constructor(collision: Sampler, elevation: Sampler) {
-        this.vehicle = new Vehicle();
-        this.dummyMatrix = mat4.create();
+
+        // The orientation of the simulation vehicle only includes yaw.
+        this.simvehicle = new Vehicle();
+
+        // The graphics vehicle includes roll and pitch as well, but for visual appeal only.
+        this.gfxvehicle = new Vehicle();
+
         this.collision = collision;
         this.elevation = elevation;
         this.keyState = {
@@ -144,7 +149,12 @@ export default class Simulation {
     }
 
     public resetPosition(pos: vec3) {
-        mat4.fromTranslation(this.dummyMatrix, pos);
+        // mat4.fromTranslation(this.simMatrix, pos);
+        vec3.copy(this.simvehicle.position, pos);
+    }
+
+    public getVehicle(): Vehicle {
+        return this.gfxvehicle;
     }
 
     public tick(dt: number) {
@@ -152,7 +162,7 @@ export default class Simulation {
             return;
         }
         if (this.falling) {
-            vec3.add(this.vehicle.position, this.vehicle.position, this.fallVector);
+            vec3.add(this.gfxvehicle.position, this.gfxvehicle.position, this.fallVector);
             return;
         }
 
@@ -228,15 +238,13 @@ export default class Simulation {
             vec3.lerp(this.repulsionForce, this.repulsionForce, zero3, t);
         }
 
-        mat4.getTranslation(this.collisionPreviousPosition, this.dummyMatrix);
+        vec3.copy(this.collisionPreviousPosition, this.simvehicle.position);
         // this.boosterCheck(dt);
 
-        const txz = vec3.fromValues(this.movement[0], 0, this.movement[2]);
-        mat4.translate(this.dummyMatrix, this.dummyMatrix, txz);
+        this.simvehicle.translate(vec3.fromValues(this.movement[0], 0, this.movement[2]));
         this.heightCheck(dt);
 
-        const ty = vec3.fromValues(0, this.movement[1], 0);
-        mat4.translate(this.dummyMatrix, this.dummyMatrix, ty);
+        this.simvehicle.translate(vec3.fromValues(0, this.movement[1], 0));
         this.collisionCheck(dt);
 
         // The original HexGL app directly manipulated the Y component of this quat value, but I
@@ -244,14 +252,9 @@ export default class Simulation {
         const degrees = this.yawAngle * 150.0;
         quat.identity(this.quaternion);
         quat.fromEuler(this.quaternion, 0, degrees, 0);
+        quat.multiply(this.simvehicle.orientation, this.simvehicle.orientation, this.quaternion);
 
-        const dummyquat = mat4.getRotation(quat.create(), this.dummyMatrix);
-        quat.multiply(dummyquat, dummyquat, this.quaternion);
-
-        const dummypos = mat4.getTranslation(vec3.create(), this.dummyMatrix);
-        mat4.fromRotationTranslation(this.dummyMatrix, dummyquat, dummypos);
-
-        // Formulate the final transformation matrix.
+        // The remaining rotations affect the graphics vehicle but not the simulation vehicle.
         const xform = mat4.identity(mat4.create());
 
         // Gradient
@@ -282,13 +285,12 @@ export default class Simulation {
             mat4.rotate(xform, xform, this.roll, this.rollAxis);
         }
 
-        mat4.multiply(xform, this.dummyMatrix, xform);
-
-        mat4.getTranslation(this.vehicle.position, xform);
-        mat4.getRotation(this.vehicle.orientation, xform);
+        mat4.multiply(xform, this.simvehicle.getMatrix(), xform);
+        mat4.getTranslation(this.gfxvehicle.position, xform);
+        mat4.getRotation(this.gfxvehicle.orientation, xform);
     }
 
-    public getSpeedRatio(): number {
+    public getNormalizedSpeed(): number {
         return (this.speed + this.boost) / this.maxSpeed;
     }
 
@@ -328,8 +330,8 @@ export default class Simulation {
         this.collisionState.right = false;
         this.collisionState.front = false;
 
-        const dummypos = mat4.getTranslation(vec3.create(), this.dummyMatrix);
-        const dummyquat = mat4.getRotation(quat.create(), this.dummyMatrix);
+        const dummypos = vec3.copy(vec3.create(), this.simvehicle.position);
+        const dummyquat = quat.copy(quat.create(), this.simvehicle.orientation);
 
         const x = this.collision.width / 2 + dummypos[0] * this.collisionPixelRatio;
         const z = this.collision.height / 2 + dummypos[2] * this.collisionPixelRatio;
@@ -388,8 +390,8 @@ export default class Simulation {
     }
 
     private heightCheck(dt: number): void {
-        const dummypos = mat4.getTranslation(vec3.create(), this.dummyMatrix);
-        const dummyquat = mat4.getRotation(quat.create(), this.dummyMatrix);
+        const dummypos = vec3.copy(vec3.create(), this.simvehicle.position);
+        const dummyquat = quat.copy(quat.create(), this.simvehicle.orientation);
 
         let x = this.elevation.width / 2 + dummypos[0] * this.heightPixelRatio;
         let z = this.elevation.height / 2 + dummypos[2] * this.heightPixelRatio;

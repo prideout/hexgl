@@ -1,20 +1,14 @@
-Simulation:
-    Remove "dummyMatrix" maybe? Or rename to yawMatrix?
-    Corruption occurs after continuously rotating clockwise in place.
-    Yaw / Pitch / Roll terminology
-    boosterCheck
+boosterCheck
+
+Clearcoat on ship, add shadows, generally better rendering, then rename the filamat
 
 Add the START banner and 3,2,1 animation
-
-Use bmp suffix to enable ZIP compression
 
 Audio
 
 Implement game menu
 
 Use workers, or remove them
-
-Clearcoat on ship, add shadows, generally better rendering.
 
 Fork me ribbon (already exists in gh-pages)
 
@@ -23,10 +17,6 @@ get rid of math.ts?
 fix culling issue
 
 simplify Simulation
-
-getSpeedRatio => getNormalizedSpeed.  ChaseCamera's tick should take matrix as argument.
-
-rename tracks.filamat
 
 Filament Typescript annotation should allow glmatrix types, eg this is annoying:
     tcm.setTransform(inst, vehicleMatrix as unknown as number[]);
