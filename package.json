@@ -15,7 +15,6 @@
     "webpack-cli": "^3.1.2"
   },
   "dependencies": {
-    "gl-matrix": "^2.8.1",
-    "typed-web-workers": "^2.1.1"
+    "gl-matrix": "^2.8.1"
   }
 }

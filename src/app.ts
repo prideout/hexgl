@@ -7,8 +7,7 @@
 
 import * as urls from "./urls";
 
-import { glMatrix, mat4, vec3 } from "gl-matrix";
-import { createWorker, ITypedWorker } from "typed-web-workers";
+import { glMatrix, vec3 } from "gl-matrix";
 
 import ChaseCamera from "./chasecam";
 import Display from "./display";
@@ -65,20 +64,3 @@ class App {
         window.requestAnimationFrame(this.tick);
     }
 }
-
-interface Values {
-    x: number;
-    y: number;
-}
-
-function workFn(input: Values, callback: (_: number) => void): void {
-    callback(input.x + input.y);
-}
-
-function logFn(result: number) {
-    console.log(`We received this response from the worker: ${result}`);
-}
-
-const typedWorker: ITypedWorker<Values, number> = createWorker(workFn, logFn);
-
-typedWorker.postMessage({ x: 5, y: 5 });

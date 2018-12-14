@@ -8,20 +8,20 @@ Audio
 
 Implement game menu
 
-Use workers, or remove them
-
 Fork me ribbon (already exists in gh-pages)
 
 get rid of math.ts?
 
-fix culling issue
-
 simplify Simulation
 
-Filament Typescript annotation should allow glmatrix types, eg this is annoying:
-    tcm.setTransform(inst, vehicleMatrix as unknown as number[]);
+Typescript annotations
+    allow glmatrix types, eg this is annoying:
+        tcm.setTransform(inst, vehicleMatrix as unknown as number[]);
+    switch to the official TS annotations
 
 rm NOTES
+
+fix culling issue
 
 ---
 
