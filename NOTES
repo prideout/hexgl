@@ -1,8 +1,12 @@
-Draw boosters
+export to OBJ then FILAMESH : boostersprite, startbanner, startglyphs, bonusspeed
+
+Draw boosters on track (I think this is the "bonusspeed" geometry)
+
+Draw startbanner and startglyphs
+
+Port over the Hud class: 3,2,1 animation etc
 
 Clearcoat on ship, add shadows, generally better rendering, then rename the filamat
-
-Add the START banner and 3,2,1 animation
 
 Audio
 
@@ -10,7 +14,7 @@ Implement game menu
 
 Fork me ribbon (already exists in gh-pages)
 
-simplify Simulation
+simplify Simulation but keep collisionState
 
 Typescript annotations
     allow glmatrix types, eg this is annoying:

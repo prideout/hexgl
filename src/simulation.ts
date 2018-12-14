@@ -68,6 +68,9 @@ export default class Simulation {
     private repulsionAmount: number;
     private repulsionForce: vec3;
     private fallVector: vec3;
+
+    // The sole purpose of this struct is to allow the "visual effects" (particles etc)
+    // to check if the vehicle has been banged up.
     private collisionState: CollisionState;
 
     constructor(vehicle: Vehicle, collision: Sampler, elevation: Sampler) {
