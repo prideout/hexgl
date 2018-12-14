@@ -1,8 +1,13 @@
-export to OBJ then FILAMESH : boostersprite, startbanner, startglyphs, bonusspeed
+Draw bonusspeed
+    nonlit
+    color: 0x0096ff
 
-Draw boosters on track (I think this is the "bonusspeed" geometry)
+Draw startbanner
+    track.cityscape.start.banner
 
-Draw startbanner and startglyphs
+Draw startglyphs => startpanels
+    track.cityscape.start.diffuse
+    ambient: 0xcccccc
 
 Port over the Hud class: 3,2,1 animation etc
 

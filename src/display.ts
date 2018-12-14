@@ -11,8 +11,8 @@
 
 import "./filament";
 
+import { mat3, quat, vec3, vec4 } from "gl-matrix";
 import * as urls from "./urls";
-
 import Vehicle from "./vehicle";
 
 export default class Display {
@@ -54,6 +54,12 @@ export default class Display {
             Filament.WrapMode.REPEAT);
 
         this.material = this.engine.createMaterial(urls.tracksMaterial);
+
+        // exportObj("bonusspeed", bonusspeed.faces, bonusspeed.vertices, bonusspeed.uvs, bonusspeed.normals);
+        // exportObj("boostersprite", boostersprite.faces, boostersprite.vertices, boostersprite.uvs,
+        //         boostersprite.normals);
+        // exportObj("startbanner", startbanner.faces, startbanner.vertices, startbanner.uvs, startbanner.normals);
+        // exportObj("startglyphs", startglyphs.faces, startglyphs.vertices, startglyphs.uvs, startglyphs.normals);
 
         // Load the high-res skybox only after every other asset has been loaded.
         const addEntity = (entity) => {
@@ -292,3 +298,274 @@ const bonusspeed = {
     "uvs": [[0,0,0.2,0,0.2,1,0,1,0.4,0,0.4,1,0.6,0,0.6,1,0.8,0,0.8,1,1,0,1,1,0,0,0.2,0,0.2,1,0,1,0.4,0,0.4,1,0.6,0,0.6,1,0.8,0,0.8,1,1,0,1,1,0,0,0.2,0,0.2,1,0,1,0.4,0,0.4,1,0.6,0,0.6,1,0.8,0,0.8,1,1,0,1,1,0,0,0.2,0,0.2,1,0,1,0.4,0,0.4,1,0.6,0,0.6,1,0.8,0,0.8,1,1,0,1,1,0,0,0.2,0,0.2,1,0,1,0.4,0,0.4,1,0.6,0,0.6,1,0.8,0,0.8,1,1,0,1,1,0,0,0.2,0,0.2,1,0,1,0.4,0,0.4,1,0.6,0,0.6,1,0.8,0,0.8,1,1,0,1,1,0,0,0.2,0,0.2,1,0,1,0.4,0,0.4,1,0.6,0,0.6,1,0.8,0,0.8,1,1,0,1,1,0,0,0.2,0,0.2,1,0,1,0.4,0,0.4,1,0.6,0,0.6,1,0.8,0,0.8,1,1,0,1,1,0,0,0.2,0,0.2,1,0,1,0.4,0,0.4,1,0.6,0,0.6,1,0.8,0,0.8,1,1,0,1,1,0,0,0.2,0,0.2,1,0,1,0.4,0,0.4,1,0.6,0,0.6,1,0.8,0,0.8,1,1,0,1,1,0,0,0.2,0,0.2,1,0,1,0.4,0,0.4,1,0.6,0,0.6,1,0.8,0,0.8,1,1,0,1,1,0,0,0.2,0,0.2,1,0,1,0.4,0,0.4,1,0.6,0,0.6,1,0.8,0,0.8,1,1,0,1,1,0,0,0.2,0,0.2,1,0,1,0.4,0,0.4,1,0.6,0,0.6,1,0.8,0,0.8,1,1,0,1,1,0,0,0.2,0,0.2,1,0,1,0.4,0,0.4,1,0.6,0,0.6,1,0.8,0,0.8,1,1,0,1,1]],
     "faces": [42,0,1,2,0,0,1,2,0,0,0,42,2,3,0,0,2,3,0,0,0,0,42,1,4,5,0,1,4,5,0,0,0,42,5,2,1,0,5,2,1,0,0,0,42,4,6,7,0,4,6,7,0,0,0,42,7,5,4,0,7,5,4,0,0,0,42,6,8,9,0,6,8,9,0,0,0,42,9,7,6,0,9,7,6,0,0,0,42,8,10,11,0,8,10,11,0,0,0,42,11,9,8,0,11,9,8,0,0,0,42,12,13,14,0,0,10,11,0,0,0,42,14,15,12,0,11,3,0,0,0,0,42,16,17,18,0,12,13,14,1,1,1,42,18,19,16,0,14,15,12,1,1,1,42,17,20,21,0,13,16,17,1,1,1,42,21,18,17,0,17,14,13,1,1,1,42,20,22,23,0,16,18,19,1,1,1,42,23,21,20,0,19,17,16,1,1,1,42,22,24,25,0,18,20,21,1,1,1,42,25,23,22,0,21,19,18,1,1,1,42,24,26,27,0,20,22,23,1,1,1,42,27,25,24,0,23,21,20,1,1,1,42,28,29,30,0,12,22,23,1,1,1,42,30,31,28,0,23,15,12,1,1,1,42,32,33,34,0,24,25,26,2,2,2,42,34,35,32,0,26,27,24,2,2,2,42,33,36,37,0,25,28,29,2,2,2,42,37,34,33,0,29,26,25,2,2,2,42,36,38,39,0,28,30,31,2,2,2,42,39,37,36,0,31,29,28,2,2,2,42,38,40,41,0,30,32,33,2,2,2,42,41,39,38,0,33,31,30,2,2,2,42,40,42,43,0,32,34,35,2,2,2,42,43,41,40,0,35,33,32,2,2,2,42,44,45,46,0,24,34,35,2,2,2,42,46,47,44,0,35,27,24,2,2,2,42,48,49,50,0,36,37,38,3,3,3,42,50,51,48,0,38,39,36,3,3,3,42,49,52,53,0,37,40,41,3,3,3,42,53,50,49,0,41,38,37,3,3,3,42,52,54,55,0,40,42,43,3,3,3,42,55,53,52,0,43,41,40,3,3,3,42,54,56,57,0,42,44,45,3,3,3,42,57,55,54,0,45,43,42,3,3,3,42,56,58,59,0,44,46,47,3,3,3,42,59,57,56,0,47,45,44,3,3,3,42,60,61,62,0,36,46,47,3,3,3,42,62,63,60,0,47,39,36,3,3,3,42,64,65,66,0,48,49,50,4,4,4,42,66,67,64,0,50,51,48,4,4,4,42,65,68,69,0,49,52,53,4,4,4,42,69,66,65,0,53,50,49,4,4,4,42,68,70,71,0,52,54,55,4,4,4,42,71,69,68,0,55,53,52,4,4,4,42,70,72,73,0,54,56,57,4,4,4,42,73,71,70,0,57,55,54,4,4,4,42,72,74,75,0,56,58,59,4,4,4,42,75,73,72,0,59,57,56,4,4,4,42,76,77,78,0,48,58,59,4,4,4,42,78,79,76,0,59,51,48,4,4,4,42,80,81,82,0,60,61,62,5,5,5,42,82,83,80,0,62,63,60,5,5,5,42,81,84,85,0,61,64,65,5,5,5,42,85,82,81,0,65,62,61,5,5,5,42,84,86,87,0,64,66,67,5,5,5,42,87,85,84,0,67,65,64,5,5,5,42,86,88,89,0,66,68,69,5,5,5,42,89,87,86,0,69,67,66,5,5,5,42,88,90,91,0,68,70,71,5,5,5,42,91,89,88,0,71,69,68,5,5,5,42,92,93,94,0,60,70,71,5,5,5,42,94,95,92,0,71,63,60,5,5,5,42,96,97,98,0,72,73,74,6,6,6,42,98,99,96,0,74,75,72,6,6,6,42,97,100,101,0,73,76,77,6,6,6,42,101,98,97,0,77,74,73,6,6,6,42,100,102,103,0,76,78,79,6,6,6,42,103,101,100,0,79,77,76,6,6,6,42,102,104,105,0,78,80,81,6,6,6,42,105,103,102,0,81,79,78,6,6,6,42,104,106,107,0,80,82,83,6,6,6,42,107,105,104,0,83,81,80,6,6,6,42,108,109,110,0,72,82,83,6,6,6,42,110,111,108,0,83,75,72,6,6,6,42,112,113,114,0,84,85,86,7,7,7,42,114,115,112,0,86,87,84,7,7,7,42,113,116,117,0,85,88,89,7,7,7,42,117,114,113,0,89,86,85,7,7,7,42,116,118,119,0,88,90,91,7,7,7,42,119,117,116,0,91,89,88,7,7,7,42,118,120,121,0,90,92,93,7,7,7,42,121,119,118,0,93,91,90,7,7,7,42,120,122,123,0,92,94,95,7,7,7,42,123,121,120,0,95,93,92,7,7,7,42,124,125,126,0,84,94,95,7,7,7,42,126,127,124,0,95,87,84,7,7,7,42,128,129,130,0,96,97,98,8,8,8,42,130,131,128,0,98,99,96,8,8,8,42,129,132,133,0,97,100,101,8,8,8,42,133,130,129,0,101,98,97,8,8,8,42,132,134,135,0,100,102,103,8,8,8,42,135,133,132,0,103,101,100,8,8,8,42,134,136,137,0,102,104,105,8,8,8,42,137,135,134,0,105,103,102,8,8,8,42,136,138,139,0,104,106,107,8,8,8,42,139,137,136,0,107,105,104,8,8,8,42,140,141,142,0,96,106,107,8,8,8,42,142,143,140,0,107,99,96,8,8,8,42,144,145,146,0,108,109,110,9,9,9,42,146,147,144,0,110,111,108,9,9,9,42,145,148,149,0,109,112,113,9,9,9,42,149,146,145,0,113,110,109,9,9,9,42,148,150,151,0,112,114,115,9,9,9,42,151,149,148,0,115,113,112,9,9,9,42,150,152,153,0,114,116,117,9,9,9,42,153,151,150,0,117,115,114,9,9,9,42,152,154,155,0,116,118,119,9,9,9,42,155,153,152,0,119,117,116,9,9,9,42,156,157,158,0,108,118,119,9,9,9,42,158,159,156,0,119,111,108,9,9,9,42,160,161,162,0,120,121,122,10,10,10,42,162,163,160,0,122,123,120,10,10,10,42,161,164,165,0,121,124,125,10,10,10,42,165,162,161,0,125,122,121,10,10,10,42,164,166,167,0,124,126,127,10,10,10,42,167,165,164,0,127,125,124,10,10,10,42,166,168,169,0,126,128,129,10,10,10,42,169,167,166,0,129,127,126,10,10,10,42,168,170,171,0,128,130,131,10,10,10,42,171,169,168,0,131,129,128,10,10,10,42,172,173,174,0,120,130,131,10,10,10,42,174,175,172,0,131,123,120,10,10,10,42,176,177,178,0,132,133,134,11,11,11,42,178,179,176,0,134,135,132,11,11,11,42,177,180,181,0,133,136,137,11,11,11,42,181,178,177,0,137,134,133,11,11,11,42,180,182,183,0,136,138,139,11,11,11,42,183,181,180,0,139,137,136,11,11,11,42,182,184,185,0,138,140,141,11,11,11,42,185,183,182,0,141,139,138,11,11,11,42,184,186,187,0,140,142,143,11,11,11,42,187,185,184,0,143,141,140,11,11,11,42,188,189,190,0,132,142,143,11,11,11,42,190,191,188,0,143,135,132,11,11,11,42,192,193,194,0,144,145,146,12,12,12,42,194,195,192,0,146,147,144,12,12,12,42,193,196,197,0,145,148,149,12,12,12,42,197,194,193,0,149,146,145,12,12,12,42,196,198,199,0,148,150,151,12,12,12,42,199,197,196,0,151,149,148,12,12,12,42,198,200,201,0,150,152,153,12,12,12,42,201,199,198,0,153,151,150,12,12,12,42,200,202,203,0,152,154,155,12,12,12,42,203,201,200,0,155,153,152,12,12,12,42,204,205,206,0,144,154,155,12,12,12,42,206,207,204,0,155,147,144,12,12,12,42,208,209,210,0,156,157,158,13,13,13,42,210,211,208,0,158,159,156,13,13,13,42,209,212,213,0,157,160,161,13,13,13,42,213,210,209,0,161,158,157,13,13,13,42,212,214,215,0,160,162,163,13,13,13,42,215,213,212,0,163,161,160,13,13,13,42,214,216,217,0,162,164,165,13,13,13,42,217,215,214,0,165,163,162,13,13,13,42,216,218,219,0,164,166,167,13,13,13,42,219,217,216,0,167,165,164,13,13,13,42,220,221,222,0,156,166,167,13,13,13,42,222,223,220,0,167,159,156,13,13,13]
 };
+
+// https://github.com/mrdoob/three.js/blob/dev/src/loaders/JSONLoader.js#L169
+export function processMesh(faces, verts, uvs, normals) {
+    const zLength = faces.length;
+    let i, j, fi, colorIndex, normalIndex, uvIndex, materialIndex, normal, hex,
+            face, faceA, faceB, uvLayer, uv, u, v, offset = 0;
+    const faceVertexUvs = [], faceVertexNormals = [], colors = [];
+
+    let nUvLayers = 0;
+
+    if (uvs !== undefined) {
+        for (i = 0; i < uvs.length; i++) {
+            if (uvs[i].length) { nUvLayers++; }
+        }
+        for (i = 0; i < nUvLayers; i++) {
+            faceVertexUvs[i] = [];
+        }
+    }
+
+    const tris = [];
+    let nquads = 0;
+
+    while (offset < zLength) {
+        const type = faces[offset++];
+        const isQuad = type & 1;
+        const hasMaterial = type & 2;
+        const hasFaceVertexUv = type & 8;
+        const hasFaceNormal = type & 16;
+        const hasFaceVertexNormal = type & 32;
+        const hasFaceColor = type & 64;
+        const hasFaceVertexColor = type & 128;
+
+        if (isQuad) {
+            nquads++;
+            faceA = [
+                faces[offset],
+                faces[offset + 1],
+                faces[offset + 3],
+           ];
+            faceB = [
+                faces[offset + 1],
+                faces[offset + 2],
+                faces[offset + 3],
+           ];
+            offset += 4;
+            if (hasMaterial) {
+                materialIndex = faces[offset++];
+                faceA.materialIndex = materialIndex;
+                faceB.materialIndex = materialIndex;
+            }
+
+            // to get face <=> uv index correspondence
+
+            fi = tris.length / 3;
+            if (hasFaceVertexUv) {
+                for (i = 0; i < nUvLayers; i++) {
+                    uvLayer = uvs[i];
+                    faceVertexUvs[i][fi] = [];
+                    faceVertexUvs[i][fi + 1] = [];
+                    for (j = 0; j < 4; j++) {
+                        uvIndex = faces[offset++];
+                        u = uvLayer[uvIndex * 2];
+                        v = uvLayer[uvIndex * 2 + 1];
+                        uv = [u, v];
+                        if (j !== 2) { faceVertexUvs[i][fi].push(uv); }
+                        if (j !== 0) { faceVertexUvs[i][fi + 1].push(uv); }
+                    }
+                }
+            }
+
+            if (hasFaceNormal) {
+                normalIndex = faces[offset++] * 3;
+                const x = normals[normalIndex++];
+                const y = normals[normalIndex++];
+                const z = normals[normalIndex];
+                // faceA.normal.set(x, y, z);
+                // faceB.normal.set(x, y, z);
+            }
+
+            if (hasFaceVertexNormal) {
+                for (i = 0; i < 4; i++) {
+                    normalIndex = faces[offset++] * 3;
+                    normal = [
+                        normals[normalIndex++],
+                        normals[normalIndex++],
+                        normals[normalIndex],
+                   ];
+                    // if (i !== 2) { faceA.vertexNormals.push(normal); }
+                    // if (i !== 0) { faceB.vertexNormals.push(normal); }
+                }
+            }
+
+            if (hasFaceColor) {
+                colorIndex = faces[offset++];
+                hex = colors[colorIndex];
+                // faceA.color.setHex(hex);
+                // faceB.color.setHex(hex);
+            }
+
+            if (hasFaceVertexColor) {
+                for (i = 0; i < 4; i++) {
+                    colorIndex = faces[offset++];
+                    hex = colors[colorIndex];
+                    // if (i !== 2) { faceA.vertexColors.push(hex); }
+                    // if (i !== 0) { faceB.vertexColors.push(hex); }
+                }
+            }
+
+            tris.push(faceA[0]);
+            tris.push(faceA[1]);
+            tris.push(faceA[2]);
+            tris.push(faceB[0]);
+            tris.push(faceB[1]);
+            tris.push(faceB[2]);
+
+        } else { // ! isQuad
+
+            face = [
+                faces[offset++],
+                faces[offset++],
+                faces[offset++],
+           ];
+
+            if (hasMaterial) {
+                materialIndex = faces[offset++];
+                face.materialIndex = materialIndex;
+            }
+
+            // to get face <=> uv index correspondence
+
+            fi = tris.length / 3;
+            if (hasFaceVertexUv) {
+                for (i = 0; i < nUvLayers; i++) {
+                    uvLayer = uvs[i];
+                    faceVertexUvs[i][fi] = [];
+                    for (j = 0; j < 3; j++) {
+                        uvIndex = faces[offset++];
+                        u = uvLayer[uvIndex * 2];
+                        v = uvLayer[uvIndex * 2 + 1];
+                        uv = [u, v];
+                        faceVertexUvs[i][fi].push(uv);
+                    }
+                }
+            }
+
+            if (hasFaceNormal) {
+                normalIndex = faces[offset++] * 3;
+                const x = normals[normalIndex++];
+                const y = normals[normalIndex++];
+                const z = normals[normalIndex];
+                // face.normal.set(x, y, z);
+            }
+
+            if (hasFaceVertexNormal) {
+                for (i = 0; i < 3; i++) {
+                    normalIndex = faces[offset++] * 3;
+                    faceVertexNormals.push(normals[normalIndex++]);
+                    faceVertexNormals.push(normals[normalIndex++]);
+                    faceVertexNormals.push(normals[normalIndex]);
+                }
+            }
+
+            if (hasFaceColor) {
+                colorIndex = faces[offset++];
+                // face.color.setHex(colors[colorIndex]);
+            }
+
+            if (hasFaceVertexColor) {
+                for (i = 0; i < 3; i++) {
+                    colorIndex = faces[offset++];
+                    // face.vertexColors.push(colors[colorIndex]);
+                }
+            }
+
+            tris.push(face[0]);
+            tris.push(face[1]);
+            tris.push(face[2]);
+        }
+    }
+
+    const derefedTexcoords = [];
+    const derefedVertices = [];
+
+    for (let f = 0, nfaces = tris.length / 3; f < nfaces; f++) {
+        const thisface = faceVertexUvs[0][f];
+        for (let side = 0; side < 3; ++side) {
+            const i0 = tris[f * 3 + side];
+            derefedVertices.push(verts[i0 * 3 + 0]);
+            derefedVertices.push(verts[i0 * 3 + 1]);
+            derefedVertices.push(verts[i0 * 3 + 2]);
+            const uv0 = thisface[side];
+            derefedTexcoords.push(uv0[0]);
+            derefedTexcoords.push(uv0[1]);
+        }
+    }
+
+    return [derefedVertices, derefedTexcoords, faceVertexNormals];
+}
+
+function clamp(v, least, most) {
+    return Math.max(Math.min(most, v), least);
+}
+
+function packSnorm16(value) {
+    return Math.round(clamp(value, -1.0, 1.0) * 32767.0);
+}
+
+function vec4_packSnorm16(out, src) {
+    out[0] = packSnorm16(src[0]);
+    out[1] = packSnorm16(src[1]);
+    out[2] = packSnorm16(src[2]);
+    out[3] = packSnorm16(src[3]);
+    return out;
+}
+
+function exportObj(name, faces, vertices, uvs, normals) {
+    const [verts, tcoords, norms] = processMesh(faces, vertices, uvs, normals);
+    const nverts = verts.length / 3;
+    const ntriangles = nverts / 3;
+    const fp32vertices = new Float32Array(verts);
+    const fp32normals = new Float32Array(norms);
+    const fp32texcoords = new Float32Array(tcoords);
+    const ui16tangents = new Uint16Array(4 * nverts);
+    const maxp = vec3.fromValues(-10000, -10000, -10000);
+    const minp = vec3.fromValues(+10000,  10000,  10000);
+    for (let i = 0; i < nverts; ++i) {
+        const src = fp32normals.subarray(i * 3, i * 3 + 3) as vec3;
+        const dst = ui16tangents.subarray(i * 4, i * 4 + 4) as vec4;
+        const n = vec3.normalize(vec3.create(), src);
+        const b = vec3.cross(vec3.create(), n, [0, 1, 0]);
+        vec3.normalize(b, b);
+        const t = vec3.cross(vec3.create(), b, n);
+        const m3 = mat3.fromValues(t[0], t[1], t[2], b[0], b[1], b[2], n[0], n[1], n[2]);
+        const q = quat.fromMat3(quat.create(), m3);
+        vec4_packSnorm16(dst, q);
+        const v = fp32vertices.subarray(i * 3, i * 3 + 3) as vec3;
+        vec3.max(maxp, maxp, v);
+        vec3.min(minp, minp, v);
+    }
+
+    const anchor = document.getElementById(name);
+
+     // Create OBJ file.
+    if (!anchor) {
+        return;
+    }
+    let objcontent = `# ${name}: ${fp32vertices.length / 3} vertices\n`;
+    for (let i = 0; i < fp32vertices.length / 3; i++) {
+        const [vi, ti] = [i * 3, i * 2];
+        const pos = [fp32vertices[vi], fp32vertices[vi + 1], fp32vertices[vi + 2]];
+        const nrm = [fp32normals[vi], fp32normals[vi + 1], fp32normals[vi + 2]];
+        const uv0 = [fp32texcoords[ti], fp32texcoords[ti + 1]];
+        objcontent += `v ${pos[0]} ${pos[1]} ${pos[2]}\n`;
+        objcontent += `vt ${uv0[0]} ${uv0[1]}\n`;
+        objcontent += `vn ${nrm[0]} ${nrm[1]} ${nrm[2]}\n`;
+    }
+
+    for (let t = 0, i = 1, j = 2, k = 3; t < ntriangles; t++, i += 3, j += 3, k += 3) {
+        objcontent += `f ${i}/${i}/${i} ${j}/${j}/${j} ${k}/${k}/${k}\n`;
+    }
+
+    const blob = new Blob([objcontent], {
+        type: "text/plain;charset=utf-8",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+    anchor["download"] = name + ".obj";
+    anchor.setAttribute("href", url);
+    anchor.click();
+    window.URL.revokeObjectURL(url);
+}
