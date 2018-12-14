@@ -12,8 +12,8 @@ export default class Vehicle {
     public readonly orientation: quat;
     private readonly matrix: mat4;
     private readonly temp: vec3;
-    constructor() {
-        this.position = vec3.create();
+    constructor(pos: vec3) {
+        this.position = vec3.copy(vec3.create(), pos);
         this.orientation = quat.create();
         this.matrix = mat4.create();
         this.temp = vec3.create();

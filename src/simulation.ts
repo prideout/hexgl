@@ -3,9 +3,7 @@
 // vehicle's position and orientation. Looks at two images (collision / elevation) to glean
 // information about the race track.
 //
-//   - constructor(collision: Sampler, elevation: Sampler)
-//   - getVehicle(): Vehicle;
-//   - resetPosition(pos: vec3)
+//   - constructor(vehicle: Vehicle, collision: Sampler, elevation: Sampler)
 //   - tick(dt: number)
 //   - getNormalizedSpeed(): number
 //
@@ -19,14 +17,13 @@ import { mat4, quat, vec3 } from "gl-matrix";
 import Vehicle from "./vehicle";
 
 export default class Simulation {
-    private readonly gfxvehicle: Vehicle;
-    private readonly simvehicle: Vehicle;
-
+    private readonly boosterSpeed: number;
     private readonly collision: Sampler;
     private readonly elevation: Sampler;
+    private readonly gfxvehicle: Vehicle;
     private readonly keyState: KeyState;
     private readonly maxSpeed: number;
-    private readonly boosterSpeed: number;
+    private readonly simvehicle: Vehicle;
 
     private active: boolean;
     private destroyed: boolean;
@@ -73,13 +70,12 @@ export default class Simulation {
     private fallVector: vec3;
     private collisionState: CollisionState;
 
-    constructor(collision: Sampler, elevation: Sampler) {
-
+    constructor(vehicle: Vehicle, collision: Sampler, elevation: Sampler) {
         // The orientation of the simulation vehicle only includes yaw.
-        this.simvehicle = new Vehicle();
+        this.simvehicle = new Vehicle(vehicle.position);
 
         // The graphics vehicle includes roll and pitch as well, but for visual appeal only.
-        this.gfxvehicle = new Vehicle();
+        this.gfxvehicle = vehicle;
 
         this.collision = collision;
         this.elevation = elevation;
@@ -148,15 +144,6 @@ export default class Simulation {
         };
     }
 
-    public resetPosition(pos: vec3) {
-        // mat4.fromTranslation(this.simMatrix, pos);
-        vec3.copy(this.simvehicle.position, pos);
-    }
-
-    public getVehicle(): Vehicle {
-        return this.gfxvehicle;
-    }
-
     public tick(dt: number) {
         if (!this.collision.ready() || !this.elevation.ready()) {
             return;
@@ -165,7 +152,7 @@ export default class Simulation {
             vec3.add(this.gfxvehicle.position, this.gfxvehicle.position, this.fallVector);
             return;
         }
-
+        vec3.copy(this.simvehicle.position, this.gfxvehicle.position);
         vec3.set(this.movement, 0, 0, 0);
         this.drift = -this.drift * driftLerp;
         this.yawAngle = -this.yawAngle * yawAngleLerp * .5;

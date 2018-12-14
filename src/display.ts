@@ -1,9 +1,9 @@
 // -------------------------------------------------------------------------------------------------
 // The Display draws to the main canvas and manages all Filament entities.
 //
-//   - constructor(canvas: HTMLCanvasElement)
+//   - constructor(canvas: HTMLCanvasElement, vehicle: Vehicle)
 //   - readonly camera: Filament.Camera;
-//   - render(vehicleMatrix: mat4)
+//   - render()
 //
 // HexGL by Thibaut 'BKcore' Despoulain <http://bkcore.com>
 // Rewritten by Philip Rideout <https://prideout.net>
@@ -13,25 +13,28 @@ import "./filament";
 
 import * as urls from "./urls";
 
-import { mat4 } from "gl-matrix";
+import Vehicle from "./vehicle";
 
 export default class Display {
-
     public readonly camera: Filament.Camera;
-    private canvas: HTMLCanvasElement;
-    private engine: Filament.Engine;
-    private scene: Filament.Scene;
-    private skybox: Filament.Skybox;
-    private indirectLight: Filament.IndirectLight;
-    private view: Filament.View;
-    private swapChain: Filament.SwapChain;
-    private renderer: Filament.Renderer;
-    private sampler: Filament.TextureSampler;
-    private material: Filament.Material;
-    private ship: Filament.Entity;
 
-    constructor(canvas) {
+    private readonly canvas: HTMLCanvasElement;
+    private readonly engine: Filament.Engine;
+    private readonly indirectLight: Filament.IndirectLight;
+    private readonly material: Filament.Material;
+    private readonly renderer: Filament.Renderer;
+    private readonly sampler: Filament.TextureSampler;
+    private readonly scene: Filament.Scene;
+    private readonly swapChain: Filament.SwapChain;
+    private readonly vehicle: Vehicle;
+    private readonly view: Filament.View;
+
+    private ship: Filament.Entity;
+    private skybox: Filament.Skybox;
+
+    constructor(canvas, vehicle) {
         this.canvas = canvas;
+        this.vehicle = vehicle;
         this.engine = Filament.Engine.create(canvas);
         this.scene = this.engine.createScene();
         this.skybox = this.engine.createSkyFromKtx(urls.skySmall);
@@ -95,11 +98,11 @@ export default class Display {
         this.resize();
     }
 
-    public render(vehicleMatrix: mat4) {
+    public render() {
         if (this.ship) {
             const tcm = this.engine.getTransformManager();
             const inst = tcm.getInstance(this.ship);
-            tcm.setTransform(inst, vehicleMatrix as unknown as number[]);
+            tcm.setTransform(inst, this.vehicle.getMatrix() as unknown as number[]);
             inst.delete();
         }
         this.renderer.render(this.swapChain, this.view);
