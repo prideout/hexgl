@@ -226,10 +226,10 @@ export default class Simulation {
         }
 
         vec3.copy(this.collisionPreviousPosition, this.simvehicle.position);
-        // this.boosterCheck(dt);
+        this.boosterCheck(dt);
 
         this.simvehicle.translate(vec3.fromValues(this.movement[0], 0, this.movement[2]));
-        this.heightCheck(dt);
+        this.heightCheck();
 
         this.simvehicle.translate(vec3.fromValues(0, this.movement[1], 0));
         this.collisionCheck(dt);
@@ -317,11 +317,11 @@ export default class Simulation {
         this.collisionState.right = false;
         this.collisionState.front = false;
 
-        const dummypos = vec3.copy(vec3.create(), this.simvehicle.position);
-        const dummyquat = quat.copy(quat.create(), this.simvehicle.orientation);
+        const simpos = this.simvehicle.position;
+        const simquat = this.simvehicle.orientation;
 
-        const x = this.collision.width / 2 + dummypos[0] * this.collisionPixelRatio;
-        const z = this.collision.height / 2 + dummypos[2] * this.collisionPixelRatio;
+        const x = this.collision.width / 2 + simpos[0] * this.collisionPixelRatio;
+        const z = this.collision.height / 2 + simpos[2] * this.collisionPixelRatio;
         const pos = vec3.fromValues(x, 0, z);
 
         const collision = this.collision.getPixelBilinear(x, z);
@@ -334,8 +334,8 @@ export default class Simulation {
             // repulsion
             vec3.set(this.repulsionVLeft, 1, 0, 0);
             vec3.set(this.repulsionVRight, -1, 0, 0);
-            vec3.transformQuat(this.repulsionVLeft, this.repulsionVLeft, dummyquat);
-            vec3.transformQuat(this.repulsionVRight, this.repulsionVRight, dummyquat);
+            vec3.transformQuat(this.repulsionVLeft, this.repulsionVLeft, simquat);
+            vec3.transformQuat(this.repulsionVRight, this.repulsionVRight, simquat);
             vec3.scale(this.repulsionVLeft, this.repulsionVLeft, this.repulsionVScale);
             vec3.scale(this.repulsionVRight, this.repulsionVRight, this.repulsionVScale);
 
@@ -376,15 +376,36 @@ export default class Simulation {
         return Math.round(this.speed + this.boost);
     }
 
-    private heightCheck(dt: number): void {
-        const dummypos = vec3.copy(vec3.create(), this.simvehicle.position);
-        const dummyquat = quat.copy(quat.create(), this.simvehicle.orientation);
+    private boosterCheck(dt: number): void {
+        const simpos = this.simvehicle.position;
+        this.boost -= boosterDecay * dt;
+        if (this.boost < 0) {
+            this.boost = 0.0;
+            // bkcore.Audio.stop('boost');
+        }
 
-        let x = this.elevation.width / 2 + dummypos[0] * this.heightPixelRatio;
-        let z = this.elevation.height / 2 + dummypos[2] * this.heightPixelRatio;
+        const x = Math.round(this.collision.width / 2 + simpos[0] * this.collisionPixelRatio);
+        const z = Math.round(this.collision.height / 2 + simpos[2] * this.collisionPixelRatio);
+
+        const color = this.collision.getPixel(x, z);
+
+        if (color.r === 255 && color.g < 127 && color.b < 127) {
+            // bkcore.Audio.play('boost');
+            this.boost = this.boosterSpeed;
+        }
+
+        this.movement[2] += this.boost * dt;
+    }
+
+    private heightCheck(): void {
+        const simpos = this.simvehicle.position;
+        const simquat = this.simvehicle.orientation;
+
+        let x = this.elevation.width / 2 + simpos[0] * this.heightPixelRatio;
+        let z = this.elevation.height / 2 + simpos[2] * this.heightPixelRatio;
         const height = this.elevation.getPixelFBilinear(x, z) / this.heightScale + this.heightBias;
         if (height < 16777) {
-            const delta = height - dummypos[1];
+            const delta = height - simpos[1];
             if (delta > 0) {
                 this.movement[1] += delta;
             } else {
@@ -394,8 +415,8 @@ export default class Simulation {
 
         // gradient
         vec3.set(this.gradientVector, 0, 0, 5);
-        vec3.transformQuat(this.gradientVector, this.gradientVector, dummyquat);
-        vec3.add(this.gradientVector, this.gradientVector, dummypos);
+        vec3.transformQuat(this.gradientVector, this.gradientVector, simquat);
+        vec3.add(this.gradientVector, this.gradientVector, simpos);
         x = this.elevation.width / 2 + this.gradientVector[0] * this.heightPixelRatio;
         z = this.elevation.height / 2 + this.gradientVector[2] * this.heightPixelRatio;
         let nheight = this.elevation.getPixelFBilinear(x, z) / this.heightScale + this.heightBias;
@@ -405,15 +426,15 @@ export default class Simulation {
 
         // tilt
         vec3.set(this.tiltVector, 5, 0, 0);
-        vec3.transformQuat(this.tiltVector, this.tiltVector, dummyquat);
-        vec3.add(this.tiltVector, this.tiltVector, dummypos);
+        vec3.transformQuat(this.tiltVector, this.tiltVector, simquat);
+        vec3.add(this.tiltVector, this.tiltVector, simpos);
         x = this.elevation.width / 2 + this.tiltVector[0] * this.heightPixelRatio;
         z = this.elevation.height / 2 + this.tiltVector[2] * this.heightPixelRatio;
         nheight = this.elevation.getPixelFBilinear(x, z) / this.heightScale + this.heightBias;
         if (nheight >= 16777) {
-            vec3.subtract(this.tiltVector, this.tiltVector, dummypos);
+            vec3.subtract(this.tiltVector, this.tiltVector, simpos);
             vec3.scale(this.tiltVector, this.tiltVector, -1);
-            vec3.add(this.tiltVector, this.tiltVector, dummypos);
+            vec3.add(this.tiltVector, this.tiltVector, simpos);
             x = this.elevation.width / 2 + this.tiltVector[0] * this.heightPixelRatio;
             z = this.elevation.height / 2 + this.tiltVector[2] * this.heightPixelRatio;
             nheight = this.elevation.getPixelFBilinear(x, z) / this.heightScale + this.heightBias;
