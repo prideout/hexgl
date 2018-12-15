@@ -1,17 +1,14 @@
-Draw bonusspeed
-    nonlit
-    color: 0x0096ff
-
 Draw startbanner
     track.cityscape.start.banner
 
-Draw startglyphs => startpanels
+Draw startpanels
     track.cityscape.start.diffuse
-    ambient: 0xcccccc
+
+Add shadows and sun light source.
+
+Clearcoat on ship and generally better rendering.
 
 Port over the Hud class: 3,2,1 animation etc
-
-Clearcoat on ship, add shadows, generally better rendering.
 
 Audio
 

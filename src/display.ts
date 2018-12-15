@@ -85,6 +85,14 @@ export default class Display {
                     addEntity(this.createRenderable(bgasset, bgmi));
                 });
             }
+
+            const boosterUrl = "bonusspeed/filamesh";
+            Filament.fetch([boosterUrl], () => {
+                const mi = this.nonlitMaterial.createInstance();
+                mi.setFloat4Parameter("color", [0.0, 0.8, 1.0, 1.0]);
+                const mesh = this.engine.loadFilamesh(boosterUrl, mi, {});
+                addEntity(mesh.renderable);
+            });
         });
 
         const sunlight = Filament.EntityManager.get().create();
