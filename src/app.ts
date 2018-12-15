@@ -17,7 +17,7 @@ import Vehicle from "./vehicle";
 
 const initialVehiclePosition = vec3.fromValues(-2268, 400, -886);
 
-Filament.init([urls.skySmall, urls.ibl, urls.tracksMaterial ], () => {
+Filament.init([urls.skySmall, urls.ibl, urls.pbrMaterial, urls.nonlitMaterial ], () => {
     // HexGL requires 64-bit precision and fast instantiation of vectors.
     glMatrix.setMatrixArrayType(Array);
 

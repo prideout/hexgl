@@ -11,7 +11,7 @@ Draw startglyphs => startpanels
 
 Port over the Hud class: 3,2,1 animation etc
 
-Clearcoat on ship, add shadows, generally better rendering, then rename the filamat
+Clearcoat on ship, add shadows, generally better rendering.
 
 Audio
 
@@ -24,7 +24,7 @@ simplify Simulation but keep collisionState
 Typescript annotations
     allow glmatrix types, eg this is annoying:
         tcm.setTransform(inst, vehicleMatrix as unknown as number[]);
-    switch to the official TS annotations
+    switch to the official TS annotations and NPM for Filament itself
 
 rm NOTES
 

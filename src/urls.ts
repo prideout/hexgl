@@ -5,7 +5,8 @@ export const ibl = `${environ}_ibl${iblSuffix}.ktx.bmp`;
 export const skySmall = `${environ}_skybox_tiny.ktx.bmp`;
 export const skyLarge = `${environ}_skybox.ktx.bmp`;
 
-export const tracksMaterial = "materials/tracks.filamat";
+export const pbrMaterial = "materials/pbr.filamat";
+export const nonlitMaterial = "materials/nonlit.filamat";
 
 export const diffuse = "diffuse.jpg";
 export const specular = "specular.jpg";
