@@ -1,5 +1,5 @@
 // -------------------------------------------------------------------------------------------------
-// The ChaseCamera adjusts a camera to make it follow a target.
+// The ChaseCamera continuously updates a camera to make it follow a target vehicle.
 //
 //   - constructor(camera: Filament.Camera, vehicle: Vehicle)
 //   - tick(dt: number, speed: number)

@@ -1,90 +1,36 @@
-Draw startbanner
-    track.cityscape.start.banner
+Add shadows (look for "sunlight" in display.ts)
 
-Draw startpanels
-    track.cityscape.start.diffuse
+Clearcoat on ship and generally better rendering (closer camera?).
 
-Add shadows and sun light source.
-
-Clearcoat on ship and generally better rendering.
-
-Port over the Hud class: 3,2,1 animation etc
-
-Audio
-
-Implement game menu
+Audio (load at same time as hi-res skybox)
 
 Fork me ribbon (already exists in gh-pages)
 
-simplify Simulation but keep collisionState
+Simplify Simulation.
+    Move collisionState and getNormalizedSpeed into Vehicle.
 
 Typescript annotations
     allow glmatrix types, eg this is annoying:
         tcm.setTransform(inst, vehicleMatrix as unknown as number[]);
-    switch to the official TS annotations and NPM for Filament itself
-
-rm NOTES
-
-fix culling issue
 
 ---
 
-Replace ship with hoverbike?
-    http://xeogl.org/examples/#materials_specular_Hoverbike
+Fix culling issue
+
+Switch to the official TS annotations and NPM for Filament itself
+
+Port over the Hud class: 3,2,1 animation etc
+
+Implement game menu
+
+Controller Support
+
+Two Player Split Screen
+
+---
 
 // rotateAxis => transformDirection =>
 //      vec3.transformQuat / vec3.transformMat4 / vec3.transformMat3
 // rotateByAxis => mat4.fromRotation
 // compose    => mat4.fromRotationTranslation
 // decompose  => mat4.getRotation, mat4.getTranslation
-
----
-
-var camera = new THREE.PerspectiveCamera( 70, ctx.width / ctx.height, 1, 60000 );
-
-var ship = ctx.createMesh(scene, this.lib.get("geometries", "ship.feisar"), -1134*2, 10, -443*2, this.materials.ship);
-
-var scene = new THREE.Scene();
-scene.add( camera );
-scene.add( new THREE.AmbientLight( ambient ) );
-
-// SUN
-var sun = new THREE.DirectionalLight( diffuse, 1.5, 30000 );
-sun.position.set( -4000, 1200, 1800 );
-sun.lookAt(new THREE.Vector3());
-
-var track = ctx.createMesh(scene, this.lib.get("geometries", "track.cityscape"), 0, -5, 0, this.materials.track);
-
-ctx.components.cameraChase = new bkcore.hexgl.CameraChase({
-        target: ship,
-        camera: camera,
-        cameraCube: ctx.manager.get("sky").camera,
-        lerp: 0.5,
-        yoffset: 8.0,
-        zoffset: 10.0,
-        viewOffset: 10.0
-    });
-
-https://github.com/tapio/darkcorners/tree/master/assets/skyboxes/stormy-day
-
-Tools Branch
-
-    ./meshindexer
-    ./third_party
-
-    git clone https://github.com/prideout/lightracer lightracer_tools
-    cd lightracer_tools ; git checkout --orphan tools
-    git rm -rf .
-
-    For inspiration: https://github.com/prideout/clumpy
-
-    This tool consumes binary files for positions, texture coordinates, and normals. It generates
-    tangents and an index buffer, producing a single filamesh file.
-
-    Usage: [vertices_path] [texcoords_path] [normals_path] [output_path]
-
-    reports on welding results
-
-        filamesh      main.cpp (for reference only)
-        mikktspace    https://github.com/tcoppex/ext-mikktspace
-        meshoptimizer https://github.com/zeux/meshoptimizer (do not use encoder)

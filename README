@@ -1,8 +1,7 @@
-This is a rewrite of Thibaut Despoulain's HexGL game using TypeScript and Filament.
-I tilt my hat to Thibaut and everyone who contributed to his project.
-🎩🏎
+This is a rewrite of Thibaut Despoulain's HexGL racing game using TypeScript and Filament.
+I tilt my 🎩 to Thibaut and everyone who contributed to his project.
 
-To build the web app, clone the repo twice: once for master and once for gh-pages.
+Before building the web app, clone the master and gh-pages branches separately as follows.
 
     git clone https://github.com/prideout/hexgl.git hexgl_source
     git clone -b gh-pages https://github.com/prideout/hexgl.git hexgl_public
@@ -11,3 +10,6 @@ To build the web app, clone the repo twice: once for master and once for gh-page
     yarn build
     cd ../hexgl_public
     npx http-server
+
+The master branch contains only the source code, while gh-pages contains resource files and the
+output of the build.

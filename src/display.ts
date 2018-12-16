@@ -20,13 +20,15 @@ export default class Display {
     private readonly canvas: HTMLCanvasElement;
     private readonly engine: Filament.Engine;
     private readonly indirectLight: Filament.IndirectLight;
-    private readonly pbrMaterial: Filament.Material;
-    private readonly nonlitMaterial: Filament.Material;
     private readonly renderer: Filament.Renderer;
     private readonly sampler: Filament.TextureSampler;
     private readonly scene: Filament.Scene;
     private readonly swapChain: Filament.SwapChain;
     private readonly view: Filament.View;
+
+    private readonly nonlitMaterial: Filament.Material;
+    private readonly pbrMaterial: Filament.Material;
+    private readonly texMaterial: Filament.Material;
 
     private readonly vehicle: Vehicle;
 
@@ -56,11 +58,12 @@ export default class Display {
 
         this.pbrMaterial = this.engine.createMaterial(urls.pbrMaterial);
         this.nonlitMaterial = this.engine.createMaterial(urls.nonlitMaterial);
+        this.texMaterial = this.engine.createMaterial(urls.texMaterial);
 
         // Load the high-res skybox only after every other asset has been loaded.
         const addEntity = (entity) => {
             this.scene.addEntity(entity);
-            if (5 === this.scene.getRenderableCount()) {
+            if (8 === this.scene.getRenderableCount()) {
                 Filament.fetch([urls.skyLarge], () => {
                     this.engine.destroySkybox(this.skybox);
                     this.skybox = this.engine.createSkyFromKtx(urls.skyLarge);
@@ -69,14 +72,12 @@ export default class Display {
             }
         };
 
-        const filenames = [urls.diffuse, urls.specular, urls.normal, urls.mesh];
-        const shipmi = this.pbrMaterial.createInstance();
-        const asset = "ship";
-        const assetUrls = filenames.map((path) => `${asset}/${path}`);
-
         // Load the ship first since it determines camera, then all other assets.
-        Filament.fetch(assetUrls, () => {
-            this.ship = this.createRenderable(asset, shipmi);
+        const filenames = [urls.diffuse, urls.specular, urls.normal, urls.mesh];
+        const shipUrls = filenames.map((path) => `ship/${path}`);
+        Filament.fetch(shipUrls, () => {
+            const shipmi = this.pbrMaterial.createInstance();
+            this.ship = this.createRenderable("ship", shipmi);
             addEntity(this.ship);
             for (const bgasset of ["tracks", "scrapers1", "scrapers2"]) {
                 const bgurls = filenames.map((path) => `${bgasset}/${path}`);
@@ -91,6 +92,26 @@ export default class Display {
                 const mi = this.nonlitMaterial.createInstance();
                 mi.setFloat4Parameter("color", [0.0, 0.8, 1.0, 1.0]);
                 const mesh = this.engine.loadFilamesh(boosterUrl, mi, {});
+                addEntity(mesh.renderable);
+            });
+
+            const bannerTexUrl = "startbanner/albedo.jpg";
+            const bannerGeoUrl = "startbanner/filamesh";
+            Filament.fetch([bannerGeoUrl, bannerTexUrl], () => {
+                const mi = this.texMaterial.createInstance();
+                const albedo = this.engine.createTextureFromJpeg(bannerTexUrl);
+                mi.setTextureParameter("albedo", albedo, this.sampler);
+                const mesh = this.engine.loadFilamesh(bannerGeoUrl, mi, {});
+                addEntity(mesh.renderable);
+            });
+
+            const panelsTexUrl = "startpanels/albedo.jpg";
+            const panelsGeoUrl = "startpanels/filamesh";
+            Filament.fetch([panelsGeoUrl, panelsTexUrl], () => {
+                const mi = this.texMaterial.createInstance();
+                const albedo = this.engine.createTextureFromJpeg(panelsTexUrl);
+                mi.setTextureParameter("albedo", albedo, this.sampler);
+                const mesh = this.engine.loadFilamesh(panelsGeoUrl, mi, {});
                 addEntity(mesh.renderable);
             });
         });
