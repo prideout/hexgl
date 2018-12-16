@@ -76,17 +76,31 @@ export default class Display {
         const filenames = [urls.diffuse, urls.specular, urls.normal, urls.mesh];
         const shipUrls = filenames.map((path) => `ship/${path}`);
         Filament.fetch(shipUrls, () => {
+
+            // Add the vehicle to scene.
             const shipmi = this.pbrMaterial.createInstance();
-            this.ship = this.createRenderable("ship", shipmi);
+            this.ship = this.createRenderable("ship", shipmi, 1.0);
             addEntity(this.ship);
-            for (const bgasset of ["tracks", "scrapers1", "scrapers2"]) {
+
+            // Add buildings to scene.
+            for (const bgasset of ["scrapers1", "scrapers2"]) {
                 const bgurls = filenames.map((path) => `${bgasset}/${path}`);
                 Filament.fetch(bgurls, () => {
                     const bgmi = this.pbrMaterial.createInstance();
-                    addEntity(this.createRenderable(bgasset, bgmi));
+                    addEntity(this.createRenderable(bgasset, bgmi, 0.1));
                 });
             }
 
+            // Add race track to scene.
+            for (const bgasset of ["tracks"]) {
+                const bgurls = filenames.map((path) => `${bgasset}/${path}`);
+                Filament.fetch(bgurls, () => {
+                    const bgmi = this.pbrMaterial.createInstance();
+                    addEntity(this.createRenderable(bgasset, bgmi, 0.0));
+                });
+            }
+
+            // Add blue boosters to scene.
             const boosterUrl = "bonusspeed/filamesh";
             Filament.fetch([boosterUrl], () => {
                 const mi = this.nonlitMaterial.createInstance();
@@ -95,6 +109,7 @@ export default class Display {
                 addEntity(mesh.renderable);
             });
 
+            // Add start banner and solar panels.
             const bannerTexUrl = "startbanner/albedo.jpg";
             const bannerGeoUrl = "startbanner/filamesh";
             Filament.fetch([bannerGeoUrl, bannerTexUrl], () => {
@@ -152,13 +167,19 @@ export default class Display {
         this.camera.setProjectionFov(45, aspect, 1.0, 20000.0, fov);
     }
 
-    private createRenderable(name, matinstance) {
+    private createRenderable(name, matinstance, clearCoat) {
         const diffuse = this.engine.createTextureFromJpeg(`${name}/${urls.diffuse}`);
         const specular = this.engine.createTextureFromJpeg(`${name}/${urls.specular}`);
         const normal = this.engine.createTextureFromJpeg(`${name}/${urls.normal}`);
         matinstance.setTextureParameter("diffuse", diffuse, this.sampler);
         matinstance.setTextureParameter("specular", specular, this.sampler);
         matinstance.setTextureParameter("normal", normal, this.sampler);
+
+        matinstance.setFloatParameter("metallic", 1.0);
+        matinstance.setFloatParameter("reflectance", 1.0);
+        matinstance.setFloatParameter("clearCoat", clearCoat);
+        matinstance.setFloatParameter("clearCoatRoughness", 0.0);
+
         const entity = this.engine.loadFilamesh(`${name}/${urls.mesh}`, matinstance, {}).renderable;
 
         const rm = this.engine.getRenderableManager();
