@@ -9,8 +9,7 @@
 // Rewritten by Philip Rideout <https://prideout.net>
 // -------------------------------------------------------------------------------------------------
 
-import "./filament";
-
+import * as Filament from "./filament";
 import * as urls from "./urls";
 import Vehicle from "./vehicle";
 

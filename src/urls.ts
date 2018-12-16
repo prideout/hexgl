@@ -1,3 +1,5 @@
+import * as Filament from "./filament";
+
 const iblSuffix = Filament.getSupportedFormatSuffix("etc s3tc");
 const environ = "env/syferfontein_18d_clear_2k";
 

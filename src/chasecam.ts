@@ -8,9 +8,10 @@
 // Rewritten by Philip Rideout <https://prideout.net>
 // -------------------------------------------------------------------------------------------------
 
-import "./filament";
+import * as Filament from "./filament";
 
 import { vec3 } from "gl-matrix";
+
 import Vehicle from "./vehicle";
 
 export default class ChaseCamera {

@@ -12,9 +12,9 @@
 // -------------------------------------------------------------------------------------------------
 
 import Sampler from "./sampler";
+import Vehicle from "./vehicle";
 
 import { mat4, quat, vec3 } from "gl-matrix";
-import Vehicle from "./vehicle";
 
 export default class Simulation {
     private readonly boosterSpeed: number;
