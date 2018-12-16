@@ -119,6 +119,7 @@ export default class Display {
         const sunlight = Filament.EntityManager.get().create();
         Filament.LightManager.Builder(Filament.LightManager$Type.SUN)
             .color([0.98, 0.92, 0.89])
+            .castShadows(true)
             .intensity(110000.0)
             .direction([0.5, -1, 0])
             .build(this.engine, sunlight);
@@ -158,6 +159,14 @@ export default class Display {
         matinstance.setTextureParameter("diffuse", diffuse, this.sampler);
         matinstance.setTextureParameter("specular", specular, this.sampler);
         matinstance.setTextureParameter("normal", normal, this.sampler);
-        return this.engine.loadFilamesh(`${name}/${urls.mesh}`, matinstance, {}).renderable;
+        const entity = this.engine.loadFilamesh(`${name}/${urls.mesh}`, matinstance, {}).renderable;
+
+        const rm = this.engine.getRenderableManager();
+        const inst = rm.getInstance(entity);
+        rm.setCastShadows(inst, true);
+        rm.setReceiveShadows(inst, true);
+        inst.delete();
+
+        return entity;
     }
 }

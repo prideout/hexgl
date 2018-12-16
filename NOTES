@@ -1,5 +1,3 @@
-Add shadows (look for "sunlight" in display.ts)
-
 Clearcoat on ship and generally better rendering (closer camera?).
 
 Audio (load at same time as hi-res skybox)

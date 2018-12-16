@@ -77,14 +77,22 @@ declare module Filament {
         public position(value: float3): LightManager$Builder;
         public direction(value: float3): LightManager$Builder;
         public build(engine: Engine, entity: Entity): void;
+        public castShadows(value: boolean): LightManager$Builder;
     }
 
     class LightManager {
         public static Builder(ltype: LightManager$Type): LightManager$Builder;
     }
 
+    class RenderableManager$Instance {
+        public delete(): void;
+    }
+
     class RenderableManager {
         public static Builder(ngeos: number): RenderableManager$Builder;
+        public getInstance(entity: Entity): RenderableManager$Instance;
+        public setCastShadows(inst: RenderableManager$Instance, enable: boolean): void;
+        public setReceiveShadows(inst: RenderableManager$Instance, enable: boolean): void;
     }
 
     class VertexBuffer {
@@ -155,6 +163,8 @@ declare module Filament {
         public createView(): View;
         public destroySkybox(skybox: Skybox): void;
         public getSupportedFormatSuffix(suffix: string): void;
+        public getLightManager(): LightManager;
+        public getRenderableManager(): RenderableManager;
         public getTransformManager(): TransformManager;
         public init(assets: string[], onready: () => void): void;
         public loadFilamesh(url: string,
