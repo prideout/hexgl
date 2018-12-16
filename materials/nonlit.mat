@@ -1,15 +1,18 @@
 material {
     name : nonlit,
-    requires : [
-        color
-    ],
     shadingModel : unlit,
-    culling : none
+    culling : none,
+    parameters : [
+        {
+            type : float4,
+            name : color
+        }
+    ]
 }
 
 fragment {
     void material(inout MaterialInputs material) {
         prepareMaterial(material);
-        material.baseColor = getColor();
+        material.baseColor = materialParams.color;
     }
 }

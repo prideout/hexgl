@@ -12,3 +12,6 @@ echo $MATINFO -g 1 pbr.filamat
 
 $MATC $MATC_FLAGS -o nonlit.filamat nonlit.mat
 echo $MATINFO -g 1 nonlit.filamat
+
+$MATC $MATC_FLAGS -o tex.filamat tex.mat
+echo $MATINFO -g 1 tex.filamat

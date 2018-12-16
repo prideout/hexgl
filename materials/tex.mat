@@ -1,0 +1,23 @@
+material {
+    name : Lit,
+    requires : [
+        uv0
+    ],
+    shadingModel : lit,
+    parameters : [
+        {
+            type : sampler2d,
+            name : albedo
+        }
+    ],
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        material.baseColor = texture(materialParams_albedo, getUV0());
+        material.roughness = 0.0;
+        material.metallic = 0.0;
+        material.clearCoat = 0.0;
+    }
+}
