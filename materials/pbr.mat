@@ -16,6 +16,22 @@ material {
         {
             type : sampler2d,
             name : normal
+        },
+        {
+            type : float,
+            name : clearCoat
+        },
+        {
+            type : float,
+            name : clearCoatRoughness
+        },
+        {
+            type : float,
+            name : metallic
+        },
+        {
+            type : float,
+            name : reflectance
         }
     ],
 }
@@ -26,11 +42,12 @@ fragment {
         prepareMaterial(material);
         material.baseColor = texture(materialParams_diffuse, getUV0());
 
-        // TODO: find luminance for r, g, b and pack it into alpha channel for diffuse
         vec3 specular = texture(materialParams_specular, getUV0()).rgb;
         material.roughness = 1.0 - length(specular);
 
-        material.metallic = 0.0;
-        material.clearCoat = 0.0;
+        material.metallic = materialParams.metallic;
+        material.reflectance = materialParams.reflectance;
+        material.clearCoat = materialParams.clearCoat;
+        material.clearCoatRoughness = materialParams.clearCoatRoughness;
     }
 }
