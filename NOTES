@@ -1,5 +1,4 @@
 Simplify Simulation.
-    Move collisionState and getNormalizedSpeed into Vehicle.
 
 Audio (load at same time as hi-res skybox)
 

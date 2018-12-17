@@ -5,7 +5,6 @@
 //
 //   - constructor(vehicle: Vehicle, collision: Sampler, elevation: Sampler)
 //   - tick(dt: number)
-//   - getNormalizedSpeed(): number
 //
 // HexGL by Thibaut 'BKcore' Despoulain <http://bkcore.com>
 // Rewritten by Philip Rideout <https://prideout.net>
@@ -68,10 +67,6 @@ export default class Simulation {
     private repulsionAmount: number;
     private repulsionForce: vec3;
     private fallVector: vec3;
-
-    // The sole purpose of this struct is to allow the "visual effects" (particles etc)
-    // to check if the vehicle has been banged up.
-    private collisionState: CollisionState;
 
     constructor(vehicle: Vehicle, collision: Sampler, elevation: Sampler) {
         // The orientation of the simulation vehicle only includes yaw.
@@ -139,12 +134,6 @@ export default class Simulation {
 
         // this.resetPos = null;
         // this.resetRot = null;
-
-        this.collisionState = {
-            front: false,
-            left: false,
-            right: false,
-        };
     }
 
     public tick(dt: number) {
@@ -280,10 +269,6 @@ export default class Simulation {
         mat4.getRotation(this.gfxvehicle.orientation, xform);
     }
 
-    public getNormalizedSpeed(): number {
-        return (this.speed + this.boost) / this.maxSpeed;
-    }
-
     private onKeyDown(event) {
         const key = this.keyState;
         switch (event.keyCode) {
@@ -316,9 +301,9 @@ export default class Simulation {
         if (this.shieldDelay > 0) {
             this.shieldDelay -= dt;
         }
-        this.collisionState.left = false;
-        this.collisionState.right = false;
-        this.collisionState.front = false;
+        this.gfxvehicle.collisionState.left = false;
+        this.gfxvehicle.collisionState.right = false;
+        this.gfxvehicle.collisionState.front = false;
 
         const simpos = this.simvehicle.position;
         const simquat = this.simvehicle.orientation;
@@ -350,22 +335,22 @@ export default class Simulation {
             this.repulsionAmount = Math.max(0.8, Math.min(repulsionCap, this.speed * repulsionRatio));
             if (rCol > lCol) {
                 this.repulsionForce[0] -= this.repulsionAmount;
-                this.collisionState.left = true;
+                this.gfxvehicle.collisionState.left = true;
             } else if (rCol < lCol) {
                 this.repulsionForce[0] += this.repulsionAmount;
-                this.collisionState.right = true;
+                this.gfxvehicle.collisionState.right = true;
             } else {
                 this.repulsionForce[2] -= this.repulsionAmount * 4;
-                this.collisionState.front = true;
+                this.gfxvehicle.collisionState.front = true;
                 this.speed = 0;
             }
 
-            // game over
+            // Check for a "messy game over". This should basically never happen if the collision
+            // system is working properly.
             if (rCol < 128 && lCol < 128) {
                 const fCol = this.collision.getPixel(Math.round(pos[0] + 2), Math.round(pos[2] + 2)).r;
                 if (fCol < 128) {
                     console.log("GAMEOVER");
-                    // this.fall();
                 }
             }
 
@@ -456,12 +441,6 @@ interface KeyState {
     ltrigger: boolean;
     rtrigger: boolean;
     use: boolean;
-}
-
-interface CollisionState {
-    front: boolean;
-    left: boolean;
-    right: boolean;
 }
 
 const epsilon = 0.00000001;

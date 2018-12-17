@@ -63,7 +63,7 @@ class App {
         this.simulation.tick(dt);
 
         // Update the camera position.
-        this.chasecam.tick(dt, this.simulation.getNormalizedSpeed());
+        this.chasecam.tick(dt);
 
         // Render the 3D scene.
         this.display.render();
