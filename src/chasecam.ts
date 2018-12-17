@@ -57,9 +57,6 @@ export default class ChaseCamera {
         vec3.scale(up, up, this.targetYoffset);
         vec3.add(targetPos, targetPos, up);
 
-        this.camera.lookAt(
-                cameraPos as unknown as number[],
-                targetPos as unknown as number[],
-                [0, 1, 0]);
+        this.camera.lookAt(cameraPos, targetPos, [0, 1, 0]);
     }
 }

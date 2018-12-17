@@ -3,6 +3,8 @@
 // We will eventually autogenerate this file, but for now it is incomplete and hand-authored.
 // -------------------------------------------------------------------------------------------------
 
+import * as glm from "gl-matrix";
+
 export as namespace Filament;
 
 export function getSupportedFormatSuffix(desired: string): void;
@@ -12,11 +14,11 @@ export function fetch(assets: string[], onready: () => void): void;
 export const assets: {[url: string]: Uint8Array};
 
 export type Box = number[][];
-export type float2 = number[];
-export type float3 = number[];
-export type float4 = number[];
-export type mat3 = number[];
-export type mat4 = number[];
+export type float2 = glm.vec2|number[];
+export type float3 = glm.vec3|number[];
+export type float4 = glm.vec4|number[];
+export type mat3 = glm.mat3|number[];
+export type mat4 = glm.mat4|number[];
 
 export class Entity {}
 export class Skybox {}
@@ -121,7 +123,7 @@ export class Material {
 }
 
 export class Camera {
-    public lookAt(eye: number[], center: number[], up: number[]): void;
+    public lookAt(eye: float3, center: float3, up: float3): void;
     public setProjectionFov(fovInDegrees: number, aspect: number,
                             near: number, far: number, fov: Camera$Fov): void;
 }
@@ -141,9 +143,9 @@ export class Scene {
 
 export class View {
     public setCamera(camera: Camera);
-    public setClearColor(color: number[]);
+    public setClearColor(color: float4);
     public setScene(scene: Scene);
-    public setViewport(viewport: number[]);
+    public setViewport(viewport: float4);
 }
 
 export class TransformManager {

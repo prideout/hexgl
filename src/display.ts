@@ -148,7 +148,7 @@ export default class Display {
         if (this.ship) {
             const tcm = this.engine.getTransformManager();
             const inst = tcm.getInstance(this.ship);
-            tcm.setTransform(inst, this.vehicle.getMatrix() as unknown as number[]);
+            tcm.setTransform(inst, this.vehicle.getMatrix());
             inst.delete();
         }
         this.renderer.render(this.swapChain, this.view);
