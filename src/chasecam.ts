@@ -8,7 +8,7 @@
 // Rewritten by Philip Rideout <https://prideout.net>
 // -------------------------------------------------------------------------------------------------
 
-import * as Filament from "./filament";
+import * as Filament from "filament";
 
 import { vec3 } from "gl-matrix";
 

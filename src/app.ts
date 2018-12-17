@@ -5,7 +5,7 @@
 // Rewritten by Philip Rideout <https://prideout.net>
 // -------------------------------------------------------------------------------------------------
 
-import * as Filament from "./filament";
+import * as Filament from "filament";
 import * as urls from "./urls";
 
 import { glMatrix, vec3 } from "gl-matrix";

@@ -1,13 +1,13 @@
+Typescript annotations
+    allow glmatrix types, eg this is annoying:
+        tcm.setTransform(inst, vehicleMatrix as unknown as number[]);
+
 Audio (load at same time as hi-res skybox)
 
 Fork me ribbon (already exists in gh-pages)
 
 Simplify Simulation.
     Move collisionState and getNormalizedSpeed into Vehicle.
-
-Typescript annotations
-    allow glmatrix types, eg this is annoying:
-        tcm.setTransform(inst, vehicleMatrix as unknown as number[]);
 
 ---
 
