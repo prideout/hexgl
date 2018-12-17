@@ -14,11 +14,6 @@ import { vec3 } from "gl-matrix";
 
 import Vehicle from "./vehicle";
 
-const yoffset = 10.0; // how far above the ship the camera flies
-const zoffset = 23.0; // how far behind the ship the camera flies
-const speedOffsetMax = 10;
-const targetYoffset = 6.0; // how far above the ship the camera looks
-
 export default class ChaseCamera {
     private readonly camera: Filament.Camera;
     private readonly vehicle: Vehicle;
@@ -59,3 +54,8 @@ export default class ChaseCamera {
         this.camera.lookAt(cameraPos, targetPos, [0, 1, 0]);
     }
 }
+
+const yoffset = 10.0; // how far above the ship the camera flies
+const zoffset = 23.0; // how far behind the ship the camera flies
+const speedOffsetMax = 10;
+const targetYoffset = 6.0; // how far above the ship the camera looks

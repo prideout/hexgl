@@ -11,19 +11,13 @@
 // Rewritten by Philip Rideout <https://prideout.net>
 // -------------------------------------------------------------------------------------------------
 
-interface Color {
-    r: number;
-    g: number;
-    b: number;
-    a: number;
-}
-
 export default class Sampler {
     public width: number;
     public height: number;
+
+    private canvas: HTMLCanvasElement;
     private image: HTMLImageElement;
     private pixels: ImageData;
-    private canvas: HTMLCanvasElement;
 
     constructor(url: string) {
         this.image = new Image();
@@ -103,4 +97,11 @@ export default class Sampler {
         const c = this.getPixelBilinear(x, y);
         return c.r + c.g * 255 + c.b * 255 * 255;
     }
+}
+
+interface Color {
+    r: number;
+    g: number;
+    b: number;
+    a: number;
 }

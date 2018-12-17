@@ -19,17 +19,15 @@ export default class Display {
     private readonly canvas: HTMLCanvasElement;
     private readonly engine: Filament.Engine;
     private readonly indirectLight: Filament.IndirectLight;
+    private readonly nonlitMaterial: Filament.Material;
+    private readonly pbrMaterial: Filament.Material;
     private readonly renderer: Filament.Renderer;
     private readonly sampler: Filament.TextureSampler;
     private readonly scene: Filament.Scene;
     private readonly swapChain: Filament.SwapChain;
-    private readonly view: Filament.View;
-
-    private readonly nonlitMaterial: Filament.Material;
-    private readonly pbrMaterial: Filament.Material;
     private readonly texMaterial: Filament.Material;
-
     private readonly vehicle: Vehicle;
+    private readonly view: Filament.View;
 
     private ship: Filament.Entity;
     private skybox: Filament.Skybox;

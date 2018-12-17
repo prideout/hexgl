@@ -1,5 +1,6 @@
-This is a rewrite of Thibaut Despoulain's HexGL racing game using TypeScript and Filament.
-I tilt my 🎩 to Thibaut and everyone who contributed to his project.
+This is a complete rewrite of Thibaut Despoulain's HexGL racing game using TypeScript and Filament.
+
+I tilt my hat to Thibaut and everyone who contributed to his awesome project! 🎩
 
 Before building the web app, clone the master and gh-pages branches separately as follows.
 

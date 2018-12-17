@@ -12,12 +12,11 @@ import { glMatrix, vec3 } from "gl-matrix";
 
 import ChaseCamera from "./chasecam";
 import Display from "./display";
-import Sampler from "./sampler";
 import Simulation from "./simulation";
 import Vehicle from "./vehicle";
 
-const initialVehiclePosition = vec3.fromValues(-2268, 400, -886);
-
+// These are only the assets that must be loaded before creating the Filament engine. Note that many
+// other assets are fetched later in the initialization process (e.g. mesh data).
 const initialAssets = [
     urls.skySmall,
     urls.ibl,
@@ -37,15 +36,13 @@ Filament.init(initialAssets, () => {
 class App {
     private readonly display: Display;
     private readonly chasecam: ChaseCamera;
-    private simulation: Simulation;
+    private readonly simulation: Simulation;
     private time: number;
 
     constructor() {
         const canvas = document.getElementsByTagName("canvas")[0];
-        const collision = new Sampler(urls.collision);
-        const elevation = new Sampler(urls.elevation);
         const vehicle = new Vehicle(initialVehiclePosition);
-        this.simulation = new Simulation(vehicle, collision, elevation);
+        this.simulation = new Simulation(vehicle);
         this.display = new Display(canvas, vehicle);
         this.chasecam = new ChaseCamera(this.display.camera, vehicle);
         this.tick = this.tick.bind(this);
@@ -72,3 +69,5 @@ class App {
         window.requestAnimationFrame(this.tick);
     }
 }
+
+const initialVehiclePosition = vec3.fromValues(-2268, 400, -886);

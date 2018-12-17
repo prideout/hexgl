@@ -1,5 +1,3 @@
-Simplify Simulation.
-
 Audio (load at same time as hi-res skybox)
 
 ---
@@ -8,8 +6,6 @@ Android
 
 Fix culling issue
 
-Switch to the official TS annotations and NPM for Filament itself
-
 Port over the Hud class: 3,2,1 animation etc
 
 Implement game menu
@@ -17,6 +13,8 @@ Implement game menu
 Controller Support
 
 Two Player Split Screen
+
+Switch to the official TS annotations and NPM for Filament itself
 
 ---
 
