@@ -1,9 +1,7 @@
-Audio (load at same time as hi-res skybox)
-
-Fork me ribbon (already exists in gh-pages)
-
 Simplify Simulation.
     Move collisionState and getNormalizedSpeed into Vehicle.
+
+Audio (load at same time as hi-res skybox)
 
 ---
 

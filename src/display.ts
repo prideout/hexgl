@@ -103,7 +103,7 @@ export default class Display {
             const boosterUrl = "bonusspeed/filamesh";
             Filament.fetch([boosterUrl], () => {
                 const mi = this.nonlitMaterial.createInstance();
-                mi.setFloat4Parameter("color", [0.0, 0.8, 1.0, 1.0]);
+                mi.setFloat4Parameter("color", [0.0, 0.2, 0.6, 1.0]);
                 const mesh = this.engine.loadFilamesh(boosterUrl, mi, {});
                 addEntity(mesh.renderable);
             });
