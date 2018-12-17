@@ -1,6 +1,4 @@
-Audio (load at same time as hi-res skybox)
-
----
+Draw the booster sprite and add post-processing effects.
 
 Android
 
@@ -18,8 +16,10 @@ Switch to the official TS annotations and NPM for Filament itself
 
 ---
 
-// rotateAxis => transformDirection =>
-//      vec3.transformQuat / vec3.transformMat4 / vec3.transformMat3
-// rotateByAxis => mat4.fromRotation
-// compose    => mat4.fromRotationTranslation
-// decompose  => mat4.getRotation, mat4.getTranslation
+ThreeJS => glMatrix notes
+
+    rotateAxis => transformDirection =>
+         vec3.transformQuat / vec3.transformMat4 / vec3.transformMat3
+    rotateByAxis => mat4.fromRotation
+    compose    => mat4.fromRotationTranslation
+    decompose  => mat4.getRotation, mat4.getTranslation

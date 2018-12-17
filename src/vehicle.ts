@@ -25,6 +25,8 @@ import { mat4, quat, vec3 } from "gl-matrix";
 export default class Vehicle {
     // The speed is normalized such that 1.0 is maximum and 0.0 is minimum.
     public speed: number;
+    public accelerating: boolean;
+    public boosted: boolean;
 
     public readonly position: vec3;
     public readonly orientation: quat;
@@ -39,6 +41,8 @@ export default class Vehicle {
 
     constructor(pos: vec3) {
         this.speed = 0.0;
+        this.accelerating = false;
+        this.boosted = false;
         this.position = vec3.copy(vec3.create(), pos);
         this.orientation = quat.create();
         this.matrix = mat4.create();

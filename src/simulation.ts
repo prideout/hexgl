@@ -97,8 +97,10 @@ export default class Simulation {
         }
 
         if (this.keyState.forward) {
+            this.gfxvehicle.accelerating = true;
             this.speed += thrust * dt;
         } else {
+            this.gfxvehicle.accelerating = false;
             this.speed -= airResist * dt;
         }
 
@@ -154,7 +156,7 @@ export default class Simulation {
         this.heightCheck();
 
         this.simvehicle.translate(vec3.fromValues(0, this.movement[1], 0));
-        this.collisionCheck(dt);
+        this.collisionCheck();
 
         // The original HexGL app directly manipulated the Y component of this quat value, but I
         // feel it is more sensical to build the quat from from Euler anglers.
@@ -225,7 +227,7 @@ export default class Simulation {
         }
     }
 
-    private collisionCheck(dt: number): void {
+    private collisionCheck(): void {
         this.gfxvehicle.collisionState.left = false;
         this.gfxvehicle.collisionState.right = false;
         this.gfxvehicle.collisionState.front = false;
@@ -280,20 +282,21 @@ export default class Simulation {
     }
 
     private boosterCheck(dt: number): void {
+        this.gfxvehicle.boosted = false;
         const simpos = this.simvehicle.position;
         this.boost -= boosterDecay * dt;
         if (this.boost < 0) {
             this.boost = 0.0;
-            // bkcore.Audio.stop('boost');
         }
 
         const x = Math.round(this.collision.width / 2 + simpos[0] * collisionPixelRatio);
         const z = Math.round(this.collision.height / 2 + simpos[2] * collisionPixelRatio);
-
         const color = this.collision.getPixel(x, z);
 
         if (color.r === 255 && color.g < 127 && color.b < 127) {
-            // bkcore.Audio.play('boost');
+            if (this.boost === 0.0) {
+                this.gfxvehicle.boosted = true;
+            }
             this.boost = boosterSpeed;
         }
 

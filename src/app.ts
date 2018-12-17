@@ -10,6 +10,7 @@ import * as urls from "./urls";
 
 import { glMatrix, vec3 } from "gl-matrix";
 
+import Audio from "./audio";
 import ChaseCamera from "./chasecam";
 import Display from "./display";
 import Simulation from "./simulation";
@@ -37,15 +38,17 @@ class App {
     private readonly display: Display;
     private readonly chasecam: ChaseCamera;
     private readonly simulation: Simulation;
+    private readonly audio: Audio;
     private time: number;
 
     constructor() {
+        this.tick = this.tick.bind(this);
         const canvas = document.getElementsByTagName("canvas")[0];
         const vehicle = new Vehicle(initialVehiclePosition);
         this.simulation = new Simulation(vehicle);
-        this.display = new Display(canvas, vehicle);
+        this.audio = new Audio(vehicle);
+        this.display = new Display(canvas, vehicle, this.audio.init.bind(this.audio));
         this.chasecam = new ChaseCamera(this.display.camera, vehicle);
-        this.tick = this.tick.bind(this);
         this.time = Date.now();
         window.requestAnimationFrame(this.tick);
     }
@@ -64,6 +67,7 @@ class App {
 
         // Render the 3D scene.
         this.display.render();
+        this.audio.render();
 
         // Request the next frame.
         window.requestAnimationFrame(this.tick);

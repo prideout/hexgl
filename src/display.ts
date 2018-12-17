@@ -1,7 +1,7 @@
 // -------------------------------------------------------------------------------------------------
 // The Display draws to the main canvas and manages all Filament entities.
 //
-//   - constructor(canvas: HTMLCanvasElement, vehicle: Vehicle)
+//   - constructor(canvas: HTMLCanvasElement, vehicle: Vehicle, onFinishedLoading)
 //   - readonly camera: Filament.Camera;
 //   - render()
 //
@@ -32,7 +32,7 @@ export default class Display {
     private ship: Filament.Entity;
     private skybox: Filament.Skybox;
 
-    constructor(canvas, vehicle) {
+    constructor(canvas: HTMLCanvasElement, vehicle: Vehicle, onFinishedLoading: () => void) {
         this.canvas = canvas;
         this.vehicle = vehicle;
         this.engine = Filament.Engine.create(canvas);
@@ -65,6 +65,7 @@ export default class Display {
                     this.engine.destroySkybox(this.skybox);
                     this.skybox = this.engine.createSkyFromKtx(urls.skyLarge);
                     this.scene.setSkybox(this.skybox);
+                    onFinishedLoading();
                 });
             }
         };
