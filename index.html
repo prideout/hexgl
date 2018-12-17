@@ -1,17 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>HexGL by BKcore</title>
-    <link href="https://google.github.io/filament/favicon.png" rel="icon" type="image/x-icon" />
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1">
-    <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { touch-action: none; width: 100%; height: 100%; }
-    </style>
+<title>HexGL by BKcore</title>
+<link href="https://google.github.io/filament/favicon.png" rel="icon" type="image/x-icon" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1">
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+}
+canvas {
+    touch-action: none;
+    width: 100%;
+    height: 100%;
+}
+.ribbon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 120px;
+    height: 120px;
+}
+.instructions {
+    position: absolute;
+    top: 20px;
+    right: 150px;
+}
+.instructions img {
+    width: 200px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+}
+</style>
 </head>
 <body>
-    <canvas></canvas>
-    <script src="main.js"></script>
+<canvas></canvas>
+<a class="ribbon" href="https://github.com/prideout/hexgl">
+    <img src="hud/fork_me_ribbon.svg" alt="Fork HexGL on GitHub">
+</a>
+<div class="instructions">
+    <img src="hud/help-0.png">
+</div>
+<script src="main.js"></script>
 </body>
 </html>
