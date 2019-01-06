@@ -159,7 +159,7 @@ export default class Simulation {
         this.collisionCheck();
 
         // The original HexGL app directly manipulated the Y component of this quat value, but I
-        // feel it is more sensical to build the quat from from Euler anglers.
+        // feel it is more sensical to build the quat from Euler anglers.
         const degrees = this.yawAngle * 150.0;
         const quaternion = quat.fromEuler(quat.create(), 0, degrees, 0);
         quat.multiply(this.simvehicle.orientation, this.simvehicle.orientation, quaternion);
